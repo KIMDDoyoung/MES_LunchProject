@@ -1,5 +1,8 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+
 .materialEditContent {
-    font-family: 'Inter';
+    font-family: 'Noto Sans KR', sans-serif;
 	margin-top: 20px;
 	margin-left: 180px;
 	width: 80%;

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/order/order_register.css">
 </head>
 <body>
-	<th:block th:insert="header/header.html"></th:block>
+<th:block th:include="header/header.html"></th:block>
       <!-- 발주관리 부분 -->
     <div class="content_detail" id="content_detail">
         <div id="content" class="maOrderCont">
@@ -41,23 +41,20 @@
             <!--lnb -->
             <div id="sub_con_wrap">
 				<!--form 시작-->
-                <form method="post" class="sub_con" id="validationForm" action="/Order" onsubmit="return validateForm()">
+                <form method="post" class="sub_con" id="validationForm" action="/order/register/action">
                     <div class="tit_box">
                         <h2 class="sub_tit">발주 등록</h2>
-                        <p class="sub_txt">
-                            <span>2</span>개의 데이터가 조회되었습니다.
-                        </p>
                     </div>
                     <!-- tit_box -->
                     <table id="table_reg">
                         <tr>
                             <th>발주일자</th>
                             <td>
-                                <input type="date" class="btn_candle input_calendar" id='input_date1' name="inout_date1" required>
+                                <input type="date" class="btn_candle input_calendar" id='input_date1' name="dateOrder" required>
                             </td>
                             <th>납기일자</th>
                             <td>
-                                <input type="date" class="btn_candle input_calendar" id='input_date3' name="inout_date3" required> 
+                                <input type="date" class="btn_candle input_calendar" id='input_date3' name="dateReceived" required> 
                             </td>
                         </tr>
                     </table>
@@ -69,8 +66,6 @@
                                 <th>협력업체</th>
                                 <th>재료번호</th>
                                 <th>원부재료명</th>
-                                <th>발주일자</th>
-                                <th>납기일자</th>
                                 <th>발주수량</th>
                                 <th>사업자등록번호</th>
                             </tr>
@@ -78,28 +73,22 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" id="buyNo" name="buyNo" required>
+                                    <input type="text" id="buyNo" name="buyNo" placeholder="발주번호 입력"required>
                                 </td>
                                 <td>
-                                    <input type="text" id="buyName" name="buyName" required>
+                                    <input type="text" id="buyName" name="buyName" placeholder="협력업체명 입력" required>
                                 </td>
                                 <td>
-                                    <input type="text" id="materialNo" name="materialNo" required>
+                                    <input type="text" id="materialNo" name="materialNo" placeholder="재료번호" required>
                                 </td>
                                 <td>
-                                    <input type="text" id="materioalName" name="materioalName" required>
+                                    <input type="text" id="materioalName" name="materioalName" placeholder="재료명 입력" required>
                                 </td>
                                 <td>
-                                    <input type="text" id="dateOrder" name="dateOrder" required>
+                                    <input type="text" id="materioalAmount" name="materioalAmount" placeholder="발주수량 입력" required>
                                 </td>
                                 <td>
-                                    <input type="text" id="dateReceived" name="dateReceived" required>
-                                </td>
-                                <td>
-                                    <input type="text" id="materioalAmount" name="materioalAmount" required>
-                                </td>
-                                <td>
-									<input type="text" id="companyNo" name="companyNo" required>
+									<input type="text" id="companyNo" name="companyNo" placeholder="사업자번호 입력" required>
 								</td>
                             </tr>
                         </tbody>

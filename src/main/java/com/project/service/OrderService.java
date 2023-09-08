@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.project.dto.OrderDTO;
 import com.project.mapper.OrderMapper;
@@ -94,6 +95,33 @@ public class OrderService {
 		    }		
 	}
 
+	   @Transactional
+	    public void insertOrderRegister(OrderDTO dto) {
+	        try {
+	            // OrderDTO에서 데이터 추출
+	            String dateOrder = dto.getDateOrder();
+	            String dateReceived = dto.getDateReceived();
+	            String buyNo = dto.getBuyNo();
+	            String buyName = dto.getBuyName();
+	            String materialNo = dto.getMaterialNo();
+	            String materioalName = dto.getMaterioalName();
+	            String materioalAmount = dto.getMaterioalAmount();
+	            String companyNo = dto.getCompanyNo();
+
+	            // Buy 테이블에 데이터 삽입
+	            mapper.insertIntoBuy(dateOrder, dateReceived, buyNo, materioalAmount);
+
+	            //협력업체 company_buy 테이블 데이터 삽입
+	            mapper.insertIntoCompany(buyName, companyNo);
+
+	            
+	            //원부재료 material 테이블
+	            mapper.insertIntoMaterial(materioalName, materialNo);
+
+	        } catch (Exception e) {
+	            throw new RuntimeException("데이터 삽입 중 오류 발생", e);
+	        }
+	    }
 	
 	
 	

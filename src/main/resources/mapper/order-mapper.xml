@@ -50,8 +50,8 @@
 		 b.B_NUM LIKE '%' || #{search} || '%'
 	</select> 
 
-<!-- 발주 날짜도 함께 검색 + 문자열 조회	 -->
- <select id="searchUserByDateRange" parameterType="map" resultMap="buy">
+	<!-- 발주 날짜도 함께 검색 + 문자열 조회	 -->
+ 	<select id="searchUserByDateRange" parameterType="map" resultMap="buy">
 	SELECT
    		 b.B_NUM,
    		 cb.B_NAME,
@@ -70,23 +70,23 @@
 		 b.B_NUM LIKE '%' || #{search} || '%'
     </select>
     
-   <!-- 발주 항목 선택 열 삭제 -->
-<delete id="deleteOrdersByCompanyNo" parameterType="string">
+	<!-- 발주 항목 선택 열 삭제 -->
+	<delete id="deleteOrdersByCompanyNo" parameterType="string">
     DELETE FROM BUY
     WHERE C_NUM = #{companyNo}
-</delete> 
+	</delete> 
 
-<!-- COMPANY_BUY 테이블에서 삭제 -->
-<delete id="deleteCompanyBuyByCompanyNo" parameterType="string">
+	<!-- COMPANY_BUY 테이블에서 삭제 -->
+	<delete id="deleteCompanyBuyByCompanyNo" parameterType="string">
     DELETE FROM COMPANY_BUY 
     WHERE C_NUM = #{companyNo}
-</delete> 
+	</delete> 
 
-<!-- MATERIAL 테이블에서 삭제 -->
-<delete id="deleteMaterialByCompanyNo" parameterType="string">
+	<!-- MATERIAL 테이블에서 삭제 -->
+	<delete id="deleteMaterialByCompanyNo" parameterType="string">
     DELETE FROM MATERIAL 
     WHERE C_NUM = #{companyNo}
-</delete>
+	</delete>
 
 	<!-- //Material 협력업체정보 페이지 - 전체 조회- 사용된 테이블 Table : BUY, COMPANY_BUY, MATERIAL(총3개) -->
 	<select id="viewAllMaterial" resultMap="buy">
@@ -110,46 +110,62 @@
 		 b.M_NUM LIKE '%' || #{search} || '%' 
 	</select> 
 
-<!-- 원부재료 선택 BUY 테이블에서 삭제 -->
-<delete id="deleteBuy" parameterType="string">
+	<!-- 원부재료 선택 BUY 테이블에서 삭제 -->
+	<delete id="deleteBuy" parameterType="string">
     DELETE FROM BUY
     WHERE C_NUM = #{companyNo}
-</delete> 
+	</delete> 
 
-<!-- COMPANY_BUY 테이블에서 삭제 -->
-<delete id="deleteCompanyBuy" parameterType="string">
+	<!-- COMPANY_BUY 테이블에서 삭제 -->
+	<delete id="deleteCompanyBuy" parameterType="string">
     DELETE FROM COMPANY_BUY 
     WHERE C_NUM = #{companyNo}
-</delete> 
+	</delete> 
 
-<!-- MATERIAL 테이블에서 삭제 -->
-<delete id="deleteMaterial" parameterType="string">
+	<!-- MATERIAL 테이블에서 삭제 -->
+	<delete id="deleteMaterial" parameterType="string">
     DELETE FROM MATERIAL 
     WHERE C_NUM = #{companyNo}
-</delete>
+	</delete>
 
-<!-- //Contractor 협력업체정보 페이지 - 전체 조회- 사용된 테이블 Table : BUY, COMPANY_BUY, MATERIAL(총3개) -->
-<select id="viewAllContractor" resultMap="buy">
+	<!-- //Contractor 협력업체정보 페이지 - 전체 조회- 사용된 테이블 Table : BUY, COMPANY_BUY, MATERIAL(총3개) -->
+	<select id="viewAllContractor" resultMap="buy">
 	SELECT  
 		cb.B_NAME, cb.C_NUM, mr.M_NAME, mr.M_CONTACT, mr.	M_MAIL
 	FROM
 		COMPANY_BUY cb , MANAGER mr
 	WHERE
 		 cb.C_NUM = mr.C_NUM(+)
-</select>
+	</select>
 
-<!-- 원부재료 선택 BUY 테이블에서 삭제 -->
-<delete id="deleteManagerContractor" parameterType="string">
+	<!-- 원부재료 선택 BUY 테이블에서 삭제 -->
+	<delete id="deleteManagerContractor" parameterType="string">
     DELETE FROM MANAGER
     WHERE C_NUM = #{companyNo}
-</delete> 
+	</delete> 
 
-<!-- COMPANY_BUY 테이블에서 삭제 -->
-<delete id="deleteCompanyBuyContractor" parameterType="string">
+	<!-- COMPANY_BUY 테이블에서 삭제 -->
+	<delete id="deleteCompanyBuyContractor" parameterType="string">
     DELETE FROM COMPANY_BUY 
     WHERE C_NUM = #{companyNo}
-</delete> 
+	</delete> 
 
-
-
+	<!--OrderRegister 발주관리 등록 - 사용된 테이블 Table : BUY, COMPANY_BUY, MATERIAL(총3개) -->
+	<!--buy 테이블에 속한 데이터 등록-->
+	<insert id="insertIntoBuy" parameterType="buy">
+  		INSERT INTO BUY (DATE_ORDER, DATE_RECEIVED, B_NUM, M_AMOUNT) 
+  		VALUES(#{dateOrder},#{dateReceived},#{buyNo},#{materioalAmount})
+  	</insert>
+  	
+	<!--company_buy 테이블에 속한 데이터 등록-->
+	<insert id="insertIntoCompany" parameterType="buy">
+  		INSERT INTO COMPANY_BUY (B_NAME, C_NUM) 
+  		VALUES(#{buyName}, #{companyNo})
+  	</insert>
+  	
+  	<!--material 테이블에 속한 데이터 등록-->
+	<insert id="insertIntoMaterial" parameterType="buy">
+  		INSERT INTO MATERIAL (MATERIAL_NAME, M_NUM) 
+  		VALUES(#{materioalName}, #{materialNo})
+  	</insert>
 </mapper>

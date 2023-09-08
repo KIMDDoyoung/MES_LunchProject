@@ -2,6 +2,7 @@ package com.project.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class OrderController {
 	public OrderController(OrderService orderService) {
 		this.orderService = orderService;
 	}
+	
 	//협력업체 조회
 	@RequestMapping("/Contractor")
 	public ModelAndView Contractor(ModelAndView view) {
@@ -32,6 +34,7 @@ public class OrderController {
 		view.setViewName("order/Contractor");
 		return view;
 	}
+	
 	//협력업체 선택 데이터 삭제
 	@RequestMapping("/contractor/delete/{companyNo}")
 	@ResponseBody
@@ -52,13 +55,15 @@ public class OrderController {
 	public String ContractorRegister() {
 		return "order/contractorRegister";
 	}
+	
 	//협럭업체 수정
-	@RequestMapping("ContractorEdit")
+	@RequestMapping("/ContractorEdit")
 	public String ContractorEdit() {
 		return "order/contractorEdit";
 	}
+	
 	//원부재료 조회
-	@RequestMapping("MaterialInfo")
+	@RequestMapping("/MaterialInfo")
 	public ModelAndView MaterialInfo(ModelAndView view) {
 		List<OrderDTO> list = orderService.viewAllMaterial();
 		System.out.println(list);
@@ -66,6 +71,7 @@ public class OrderController {
 		view.setViewName("order/MaterialInfo");
 		return view;
 	}
+	
 	//원부재료 문자열 조회
 	@RequestMapping("/material/search")
 	public ResponseEntity<List<OrderDTO>> MaterialSearchList(
@@ -98,6 +104,7 @@ public class OrderController {
 	public String MaterialRegister() {
 		return "order/material_register";
 	}
+	
 	//원부재료 수정
 	@RequestMapping("/MaterialEdit")
 	public String MaterialEdit() {
@@ -113,6 +120,7 @@ public class OrderController {
 		view.setViewName("order/Order");
 		return view;
 	}
+	
 	//발주관리 발주날짜+문자열 조회
 	@RequestMapping("/buy/search")
 	public ResponseEntity<List<OrderDTO>> BuySearchList(
@@ -148,16 +156,28 @@ public class OrderController {
 	    }
 	}
 	
-	
 	//발주관리 수정
-		@RequestMapping("/OrderRgisterEdit")
-		public String OrderRgisterEdit() {
+	@RequestMapping("/OrderRgisterEdit")
+	public String OrderRgisterEdit() {
 			return "order/order_register_edit";
 	}
-    //발주관리 등록
-	@RequestMapping("/OrderRegister")
-	public String OderRegister() {
-			return "order/order_register";
-	}	
+	
+	//발주관리 등록
+		@RequestMapping("/OrderRegister")
+		public String OrderRegister() {
+				return "order/order_register";
+		}
+		
+	//발주관리 등록 form
+	@RequestMapping("/order/register/action")
+	public String OderRegister(OrderDTO dto) {
+		 try {
+		      orderService.insertOrderRegister(dto);
+		      return "redirect:/Order";
+		 } catch (Exception e) {
+		      e.printStackTrace();
+		      return "/OrderRegister";
+		 }
+	}
 	
 }

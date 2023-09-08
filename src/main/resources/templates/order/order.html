@@ -105,7 +105,7 @@ $(function () {
 });
 </script>
 <body>
-	<th:block th:insert="header/header.html"></th:block>
+<th:block th:include="header/header.html"></th:block>
        <!-- 발주관리 부분 -->
     <div class="content_detail" id="content_detail">
         <div id="content" class="maOrderCont">
@@ -140,9 +140,6 @@ $(function () {
                 <div class="sub_con">
                     <div class="tit_box">
                         <h2 class="sub_tit">발주 관리</h2>
-                        <p class="sub_txt">
-                            <span>2</span>개의 데이터가 조회되었습니다.
-                        </p>
                     </div>
                     <!-- tit_box -->
                     <table id="table_reg">

@@ -38,6 +38,14 @@ public interface OrderMapper {
 
 	void deleteCompanyBuyContractor(String companyNo);
 
+	void insertIntoBuy(String dateOrder, String dateReceived, String buyNo, String materioalAmount);
+
+	void insertIntoCompany(String buyName, String companyNo);
+
+	void insertIntoMaterial(String materioalName, String materialNo);
+
+
+
 
 
 
