@@ -70,3 +70,8 @@ li {
    text-decoration: none;
    color: #fff;
 }
+a {
+	text-decoration: none;
+	color: black;
+	font-weight: bold;
+}

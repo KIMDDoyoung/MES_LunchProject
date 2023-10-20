@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.project.dto.KongjungDTO;
+import com.project.dto.OrderDTO;
 import com.project.mapper.KongjungMapper;
 
 
@@ -39,18 +40,77 @@ public class KongjungService {
 		return mapper.selectSearch1(search);
 	}
 	
-	// 선택된 항목을 삭제하는 메서드
-    public boolean deleteSelected(List<Long> selectedIds) {
-        try {
-            for (Long id : selectedIds) {
-                mapper.deleteKongjung(id);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+	public void deletekongjung(String processNum) {
+		mapper.deletekongjung(processNum);
+
+}
+	
+	public void deletekongjung1(String recipeNum) {
+		mapper.deletekongjung1(recipeNum);
+
+}
+
+
+	
+	//공정정보 등록
+			public void KongjungInsert(KongjungDTO dto) {
+				 try {
+			            // KongjungDTO에서 데이터 추출
+					 	String processNum = dto.getProcessNum();
+			            String processName = dto.getProcessName();
+			            String materialNo = dto.getMaterialNo();
+
+			            mapper.KongjungInsert(processNum, processName, materialNo);
+			       
+
+			        } catch (Exception e) {
+			            throw new RuntimeException("데이터 삽입 중 오류 발생", e);
+			        }
+			  }
+
+
+			public KongjungDTO editKongjung(String p_num) {
+				return mapper.editKongjung(p_num);
+			}
+			
+			public KongjungDTO editRecipe(String r_num) {
+				return mapper.editRecipe(r_num);
+			}
+
+			public void updateRecipe(KongjungDTO dto) {
+				try {
+					String processNum = dto.getProcessNum();
+		            int processTime = dto.getProcessTime();
+		            String process1 = dto.getProcess1();
+		            String process2 = dto.getProcess2();
+		            String process3 = dto.getProcess3();
+		            String process4 = dto.getProcess4();
+		            String process5 = dto.getProcess5();
+		            String process6 = dto.getProcess6();
+		            
+		            mapper.updateRecipe(processNum, processTime, process1, process2, process3, process4, process5, process6);
+				}
+				catch (Exception e) {
+		            throw new RuntimeException("데이터 삽입 중 오류 발생", e);
+		        }
+			}
+
+			public void updateKongjung(KongjungDTO dto) {
+				try {
+					String processNum = dto.getProcessNum();
+		            String processName = dto.getProcessName();
+		            String materialNo = dto.getMaterialNo();
+		            
+		            mapper.updateKongjung(processNum, processName, materialNo);
+				}
+				catch (Exception e) {
+		            throw new RuntimeException("데이터 삽입 중 오류 발생", e);
+		        }
+			}
+
+
+			
+
 	
 
 }

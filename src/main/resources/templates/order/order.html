@@ -8,51 +8,147 @@
     <link rel="stylesheet" href="/order/order.css">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/JsBarcode.code128.min.js"></script>
+<script src="js/bxlcommon.js"></script>
+<script src="js/bxllabel.js"></script>
 <script>
-$(function () {
-	//발주날짜선택 + 문자열 검사
-    $('.btn_search').click(function () {
-        let startDate = $('#input_date1').val();
-        let endDate = $('#input_date2').val();
+		//바코드 전체 출력하는 함수
+	function printAllBarcode() {
+		//consignment_data class의 tr 지정
+		let row = $(".list tr");
 
-        let data = {
-            startDate: startDate,
-            endDate: endDate,
-            search: $("#search_po_p").val()
-        };
+		$(row).each(function (idx, obj) {
+			//tr의 자녀 속성인 td중 1번째인 출하코드 선택
+			console.log($(obj).children("td").eq(1).text());
+			let barcodeValue = $(obj).children("td").eq(1).text();
+			//td중 마지막 속성의 자녀 속성인 svg에 0번째 선택
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {
+				//바코드 크기
+				format: "CODE128", width: 1,
+				height: 20
+			});
+		});
+	}
+		//바코드 출력 함수
+	var issueID = 1;
+	var printer_name = 'Printer1';
 
-        $.ajax({
-            url: '/buy/search',
-            data: data,
-            type: 'post',
-            dataType: 'json',
-            success: function (r) {
-                console.log(r);
-                var tag = "";
+	function viewResult(result) {
+		console.log(result);
+	}
 
-                if (r.length === 0) {
-                    tag = "<tr><td colspan='8'>일치하는 정보가 없습니다.</td></tr>";
-                    $('.list').html(tag);
-                } else {
-                    for (let i = 0; i < r.length; i++) {
-                        tag += `<tr>`;
-                        tag += `<td><input type='checkbox' name='s_no'></td>`;
-                        tag += `<td>${r[i].buyNo}</td>`;
-                        tag += `<td>${r[i].buyName}</td>`;
-                        tag += `<td>${r[i].materialNo}</td>`;
-                        tag += `<td>${r[i].materioalName}</td>`;
-                        tag += `<td>${r[i].dateOrder}</td>`;
-                        tag += `<td>${r[i].dateReceived}</td>`;
-                        tag += `<td>${r[i].materioalAmount}</td>`;
-                        tag += `</tr>`;
-                    }
-                    $('.list').html(tag);
-                }
-            }
-        });
-    });
-});
-$(function () {
+	function PrintBarcode(row) {
+		console.log(row);
+		//return
+		var barCodeSymbol = 1;
+		var barCodeHeight = 100;
+		var barWidth = 4;
+		var nBarWidth = parseInt(barWidth / 2);
+		var barCodeHri = 1;
+
+		setLabelId(issueID);
+
+		checkLabelStatus();
+		clearBuffer();
+
+		setWidth(576);
+
+		drawDeviceFont("발주 정보", 30, 10, 'b', 1, 1, 0, 0, 1, 0);
+		drawBlock(30, 40, 530, 45, 'B', 5);
+		drawDeviceFont(`발주 코드 : ${$(row).eq(1).text()}`, 30, 50, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`사업자 번호 : ${$(row).eq(2).text()}`, 30, 90, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(` 재료번호 : ${$(row).eq(3).text()}`, 30, 130, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`발주일자 : ${$(row).eq(5).text()}`, 30, 170, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`납기일자 : ${$(row).eq(6).text()}`, 30, 210, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`발주수량 : ${$(row).eq(7).text()}`, 30, 250, 'd', 1, 1, 0, 0, 0, 0);
+		//x,y,x,y 좌하단 우하단,글꼴,두께
+		drawBlock(30, 300, 530, 300, 'B', 5);
+		draw1DBarcode($(row).eq(1).text(), 70, 300, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+		printBuffer();
+
+		var strSubmit = getLabelData();
+
+		console.log(strSubmit);
+
+		issueID++;
+		console.log(strSubmit, viewResult);
+		requestPrint(printer_name, strSubmit, viewResult);
+
+	}
+
+	$(function () {
+	//바코드 찍으면 자동으로 엔터값 입력
+		$("#search_po_p").keyup(function (e) {
+			console.log(e.keyCode)
+			
+			if (e.keyCode == 13){
+		// 입력된 문자열을 가져옴
+		var inputString = document.getElementById("search_po_p").value;
+
+		// 문자열을 대문자로 변환
+		var uppercaseString = inputString.toUpperCase();
+
+		// 변환된 문자열을 다시 입력란에 넣음
+		document.getElementById("search_po_p").value = uppercaseString;			
+			$('#btn_search').click();
+			}
+		});
+		//바코드 클릭했을 때 바코드 출력시키는 기능
+		$("svg").click(function () {
+			let row = $(this).parent().parent().children("td");
+			PrintBarcode(row);
+		});
+		//발주날짜선택 + 문자열 검사
+	    $('.btn_search').click(function () {
+	        let startDate = $('#input_date1').val();
+	        let endDate = $('#input_date2').val();
+	
+	        let data = {
+	            startDate: startDate,
+	            endDate: endDate,
+	            search: $("#search_po_p").val()
+	        };
+	
+	        $.ajax({
+	            url: '/buy/search',
+	            data: data,
+	            type: 'post',
+	            dataType: 'json',
+	            success: function (r) {
+	                console.log(r);
+	                var tag = "";
+	
+	                if (r.length === 0) {
+	                    tag = "<tr><td colspan='8'>일치하는 정보가 없습니다.</td></tr>";
+	                    $('.list').html(tag);
+	                } else {
+	                    for (let i = 0; i < r.length; i++) {
+	                        tag += `<tr id="buy">`;
+	                        tag += `<td><input type='checkbox' name='s_no'></td>`;
+	                        tag += `<td>${r[i].buyNo}</td>`;
+	                        tag += `<td>${r[i].buyName}</td>`;
+	                        tag += `<td>${r[i].materialNo}</td>`;
+	                        tag += `<td>${r[i].materioalName}</td>`;
+	                        tag += `<td>${r[i].dateOrder}</td>`;
+	                        tag += `<td>${r[i].dateReceived}</td>`;
+	                        tag += `<td>${r[i].materioalAmount}</td>`;
+	                        tag += `<td><svg></svg></td>`;
+	                        tag += `</tr>`;
+	                    }
+	                    $('.list').html(tag);
+	                    printAllBarcode();
+						updateDataCount(r.length);
+						
+	                   $("svg").click(function(){
+						let row = $(this).parent().parent().children("td");
+						PrintBarcode(row);
+					});
+	               }
+	            }
+	        });
+	    });
+	printAllBarcode();
+	console.log(printAllBarcode());
     // 전체 선택 체크박스 클릭 시 개별 체크박스 상태 업데이트
     $('input[name="chk_all"]').click(function () {
         var isChecked = $(this).prop('checked');
@@ -72,6 +168,7 @@ $(function () {
             allCheckbox.prop('checked', false);
         }
     });
+	});
 
   // 선택 삭제 버튼 클릭 시 선택된 항목 삭제
   $('.btn.delete').click(function () {
@@ -80,28 +177,41 @@ $(function () {
         alert('삭제할 항목을 선택하세요.');
     } else {
         if (confirm('선택한 항목을 삭제하시겠습니까?')) {
+               var buyNos = [];
+            
             selectedItems.each(function () {
-                var companyNo = $(this).closest('tr').find('td:last-child').text();
+               buyNo = $(this).closest('tr').find('td:eq(1)').text();
+               buyNos.push(buyNo);
+               
+                console.log(buyNos);
                 $.ajax({
-                    url: '/buy/delete/' + companyNo,
+					data: {'buyNo': buyNos},
+                    url: '/buy/delete/',
                     type: 'post',
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response) {
-                            alert(response.message);
-                            $(this).closest('tr').remove();
+                    success: function (r) {
+                        if (Number(r.count) == 0) {
+                            alert(r.message);
                         } else {
                             alert('삭제 실패');
+
+                            $(selectedItems).closest('tr').remove();
                         }
                     },
                     error: function () {
-                        alert('서버 오류');
+						alert('서버 오류');
                     }
                 });
             });
         }
     }
-});
+    });
+     $(document).ready(function(){
+    // 해당 발주번호를 클릭할 때 해당 열 데이터 넘김
+    $('.buyNo').click(function () {
+        var materialNo = $(this).closest('tr').find('td:nth-child(4)').text();
+        var buyNo = $(this).closest('tr').find('.buyNo').text();
+		location.href=`/editOrder?buyNo=${buyNo}&materialNo=${materialNo}`;
+    });
 });
 </script>
 <body>
@@ -160,35 +270,38 @@ $(function () {
                     </table>
                     <div class="search_pc">
                         <input type="text" id="search_po_p" name="search_key" placeholder="발주일자 선택 + 발주번호입력">
-                        <span><button class="btn_search">조회</button></span>
+                        <span><button type="button" class="btn_search">조회</button></span>
                     </div>
                     <!-- search_pc -->
                     <table id="table" class="result_table">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" name="chk_all"></th>
-                                <th>발주번호</th>
-                                <th>협력업체</th>
-                                <th>재료번호</th>
-                                <th>원부재료명</th>
-                                <th>발주일자</th>
-                                <th>납기일자</th>
-                                <th>발주수량</th>
+                                <th style="width: 100px;"><input type="checkbox" name="chk_all"></th>
+                                <th style="width: 200px;">발주번호</th>
+                                <th  style="width: 200px;">사업자등록번호</th>
+                                <th  style="width: 200px;">재료번호</th>
+                                <th  style="width: 200px;">원부재료명</th>
+                                <th style="width: 200px;" >발주일자</th>
+                                <th  style="width: 200px;">납기일자</th>
+                                <th style="width: 200px;">발주수량</th>
+                                <th style="width: 200px;">바코드</th>
+                               <!-- <th  style="display: none;">협력업체</th>-->
                             </tr>
                         </thead>
                         <tbody class="list">
                             <tr  id="buy" th:each="buy : ${list}">
                                 <td>
-                                    <input type='checkbox' name='s_no'>
+                                    <input type='checkbox' class="sno" name='s_no'>
                                 </td>
-                                <td>[[${buy.buyNo}]]</td>
-                                <td>[[${buy.buyName}]]</td>
+                                <td class="buyNo">[[${buy.buyNo}]]</td>
+                                <td>[[${buy.companyNo}]]</td>
                                 <td>[[${buy.materialNo}]]</td>
                                 <td>[[${buy.materioalName}]]</td>
                                 <td>[[${buy.dateOrder}]]</td>
                                 <td>[[${buy.dateReceived}]]</td>
                                 <td>[[${buy.materioalAmount}]]</td>
-                                <td style="display: none;">[[${buy.companyNo}]]</td>
+                                <td><svg></svg></td>
+                               <!-- <td style="display: none;">[[${buy.buyName}]]</td>-->
                             </tr>
                         </tbody>
                     </table>
@@ -197,7 +310,7 @@ $(function () {
                             <div class="btn delete" title="선택삭제">선택삭제</div>
                         		<div class="bot_edit" title="왼쪽">
                             		<div class="btn btn_right" title="등록" onclick="location.href='/OrderRegister'">등록</div>
-									 	<div class="btn edit" title="수정">수정</div>                           	
+									 	<div class="btn edit" title="수정" >수정</div>                           	
                         		</div>
                         </div>
                         <!-- bot_btn -->

@@ -7,7 +7,10 @@
 	<title>Document</title>
 	<link rel="stylesheet" href="/obtainorder/production_info.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<!--<script src="https://cdn.jsdelivr.net/jsbarcode/3.11.0/JsBarcode.all.min.js"></script>-->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="/js/JsBarcode.code128.min.js"></script>
+	<script src="js/bxlcommon.js"></script>
+	<script src="js/bxllabel.js"></script>
 </head>
 <script>
 	// 조회
@@ -21,26 +24,32 @@
 			dataType: "json",
 			type: "post",
 			success: function (r) {
-				var tag = ``;
+				var tag = "";
+				console.log(r);
+				if (r.length === 0) {
+					tag = "<tr><td colspan='10'>일치하는 사용자 정보가 없습니다.<td></tr>";
+					$(".bodyClass").html(tag);
+				} else {
+					for (i = 0; i < r.length; i++) {
+						tag += `<tr class="info">`;
+						tag += `<td><input type="checkbox" class="check_one"></td>`;
+						tag += `<td id="number">${i+1}</td>`;
+						tag += `<td>${r[i].pNum}</td>`;
+						tag += `<td>${r[i].pName}</td>`;
+						tag += `<td>${r[i].pSize}</td>`;
+						tag += `<td>${r[i].boxCount}</td>`;
+						tag += `<td>${r[i].pWeight}</td>`;
+						tag += `<td>${r[i].pFinish}</td>`;
+						tag += `<td>${r[i].price}</td>`;
+						tag += `<td><svg></svg></td>`;
+						tag += `</tr>`;
+					}
 
-				for (i = 0; i < r.length; i++) {
-					tag += `<tr>`;
-					tag += `<td><input type="checkbox" class="check_one"></td>`;
-					tag += `<td>${1}</td>`;
-					tag += `<td>${r[i].pImg}</td>`;
-					tag += `<td>${r[i].sPhase}</td>`;
-					tag += `<td>${r[i].pNum}</td>`;
-					tag += `<td>${r[i].pName}</td>`;
-					tag += `<td>${r[i].pSize}</td>`;
-					tag += `<td>${r[i].boxCount}</td>`;
-					tag += `<td>${r[i].pWeight}</td>`;
-					tag += `<td>${r[i].pFinish}</td>`;
-					tag += `<td>${r[i].price}</td>`;
-					tag += `<td>${r[i].barcode}</td>`;
-					tag += `</tr>`;
+					$(".bodyClass").html(tag);
+					console.log(tag);
+					generateBarcode();
+					updateDataCount(r.length);
 				}
-
-				$("tbody").html(tag);
 			}
 		});
 	}
@@ -54,12 +63,12 @@
 		} else if (phase === 'complete') {
 			$('.info').hide();
 			$('.info').filter(function () {
-				return $(this).find('td:eq(3)').text() === '4';
+				return $(this).find('td:eq(2)').text() === '4';
 			}).show();
 		} else if (phase === 'half') {
 			$('.info').hide();
 			$('.info').filter(function () {
-				var phaseValue = $(this).find('td:eq(3)').text();
+				var phaseValue = $(this).find('td:eq(2)').text();
 				return phaseValue >= '0' && phaseValue <= '3';
 			}).show();
 		}
@@ -74,17 +83,18 @@
 			alert("선택된 항목이 없습니다.");
 		} else {
 			if (confirm('선택한 항목을 삭제하시겠습니까?')) {
-				var data = "";
+				var pNums = [];
 				checkedItems.each(function () {
-					data += "check=" + $(this).parent().parent().find('td:eq(5)').text();
+					pNum = $(this).parent().parent().find('td:eq(2)').text();
+					pNums.push(pNum);
 				});
+				console.log(pNums);
 				$.ajax({
-					data: data,
-					url: '/production/delete/{pNum}',
+					data: {'pNum': pNums},
+					url: '/production/delete',
 					type: 'post',
 					dataType: 'json',
 					success: function (r) {
-						console.log(r);
 						if (Number(r.count) == 0) {
 							alert(r.message);
 							location.reload();
@@ -101,6 +111,52 @@
 				});
 			};
 		}
+	}
+	//바코드 출력 함수
+	var issueID = 1;
+	var printer_name = 'Printer1';
+
+	function viewResult(result) {
+		console.log(result);
+	}
+
+	function PrintBarcode(row) {
+		console.log(row);
+		//return
+		var barCodeSymbol = 1;
+		var barCodeHeight = 100;
+		var barWidth = 4;
+		var nBarWidth = parseInt(barWidth / 2);
+		var barCodeHri = 1;
+
+		setLabelId(issueID);
+
+		checkLabelStatus();
+		clearBuffer();
+
+		setWidth(576);
+
+		drawDeviceFont("제품 정보", 30, 10, 'b', 1, 1, 0, 0, 1, 0);
+		drawBlock(30, 40, 530, 45, 'B', 5);
+		drawDeviceFont(`제품 번호 : ${$(row).eq(2).text()}`, 30, 50, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`제품명 : ${$(row).eq(3).text()}`, 30, 90, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`규격 : ${$(row).eq(4).text()}`, 30, 130, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`수량 : ${$(row).eq(5).text()}`, 30, 170, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`유통 기한 : ${$(row).eq(7).text()}`, 30, 210, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`가격 : ${$(row).eq(8).text()}`, 30, 250, 'd', 1, 1, 0, 0, 0, 0);
+		//x,y,x,y 좌하단 우하단,글꼴,두께
+		drawBlock(30, 300, 530, 300, 'B', 5);
+		draw1DBarcode($(row).eq(2).text(), 70, 350, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+		printBuffer();
+
+		var strSubmit = getLabelData();
+
+		console.log(strSubmit);
+
+		issueID++;
+		console.log(strSubmit, viewResult);
+		requestPrint(printer_name, strSubmit, viewResult);
+
 	}
 	$(function () {
 		//=================체크박스 전체선택=================
@@ -132,55 +188,66 @@
 		});
 
 		//=================행클릭 이벤트=================
+
 		$('.info td:not(:first-child)').click(function () {
-			window.location.href = "/production/detail/{pNum}(pNum=${pro.pNum})";
+			var pNum = $(this).closest('tr').find('td:nth-child(3)').text();
+			window.location.href = `/ProductionInfoModi?pNum=${pNum}`;
 		});
 
-		// 초기 페이지 표시 (처음 로드 시 10개의 요소만 표시)
+		//페이지 뷰
 		showPage(currentPage);
 		updatePageButtons();
+		//바코드 호출
+		generateBarcode();
+		
+		//바코드 리더기 처리
+		$(".txt_search").keyup(function(e){
+			if(e.keyCode==13)
+				$('.btn_search').click();
+				
+		});
+		$(".btn_reset").click(function(e){
+			$(".txt_search").val('');
+			$('.btn_search').click();
+				
+		});
+		//바코드 클릭했을 때 바코드 출력시키는 기능
+		$("svg").click(function () {
+			let row = $(this).parent().parent().children("td");
+			PrintBarcode(row);
+		});
 	});
 	//=================바코드 생성 함수=================
-	/*function generateBarcode(pNum) {
-		// 바코드를 생성할 대상 엘리먼트 선택
-		var barcodeElement = document.createElement('div'); // 예시로 div 엘리먼트를 생성
+	function generateBarcode() {
+		let row = $(".info");
 
-		// 바코드 생성 및 설정
-		JsBarcode(barcodeElement, pNum, {
-			format: "CODE128", // 바코드 형식 선택 (여기서는 CODE128을 사용)
-			displayValue: false // 바코드 값 표시 여부 (false로 설정하면 순수한 바코드 이미지가 됨)
+		$(row).each(function (idx, obj) {
+			console.log($(obj).children("td").eq(2).text());
+			let barcodeValue = $(obj).children("td").eq(2).text();
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {format: "CODE128"});
 		});
-
-		// 생성한 바코드를 각 행의 다섯 번째 칸에 추가
-		$(".info").each(function () {
-			var pNumInRow = $(this).find("td:eq(4)").text(); // 다섯 번째 칸의 텍스트 값 가져오기
-			if (pNumInRow === pNum) {
-				// 해당 행의 pNum 값이 원하는 값과 일치하면 바코드 추가
-				$(this).find(".barcode-cell").empty().append(barcodeElement);
-			}
-		});
-	}*/
+	}
+	function updateDataCount(count) {
+		// 조회된 데이터의 갯수를 표시하는 요소 업데이트
+		$(".count").text(count);
+	}
 </script>
 
 <body>
+	<th:block th:insert="header/header.html"></th:block>
 	<div class="All">
-		<div class="header">
+		<div class="obtainheader">
 			<a href="/mainpage">
 				<img src="/img/home.png" alt="" class="source" id="home">
 			</a>
 			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-			<a href="#" class="source" id="headText">수주관리</a>
+			<a href="/ProductionInfo" class="source" id="headText">수주관리</a>
 			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-			<a href="#" class="source" id="headText">제품정보</a>
+			<a href="/ProductionInfo" class="source" id="headText">제품정보</a>
 		</div>
-		<h1>제품정보</h1>
+		<h2>제품정보</h2>
 		<p class="inquire"><span class="count">[[${countAllOrderProduct}]]</span>의 데이터가 조회되었습니다.</p>
 		<div class="search_result">
-			<div class="button">
-				<button value="button" class="btn_click" id="all">전체([[${countAllOrderProduct}]])</button>
-				<button value="button" class="btn_click" id="complete">완제품([[${countAllOrderProduct1}]])</button>
-				<button value="button" class="btn_click" id="half">반제품([[${countAllOrderProduct2}]])</button>
-			</div>
 			<div class="business_search">
 				<select id="sel_kind"
 					style="margin-right: 5px; border-color: #F08080; flex-shrink: 0; border-radius: 4px;">
@@ -188,8 +255,9 @@
 					<option value="p_name">제품명</option>
 				</select>
 				<img src="/img/search_icon.png" alt="" id="img_search">
-				<input type="text" class="txt_search">
+				<input type="text" class="txt_search" autofocus>
 				<button class="btn_search">검색</button>
+				<button class="btn_reset">초기화</button>
 			</div>
 		</div>
 		<table id="search_result">
@@ -197,8 +265,6 @@
 				<tr>
 					<th><input type="checkbox" class="check_all"></th>
 					<th>번호</th>
-					<th>이미지</th>
-					<th>분류</th>
 					<th>제품번호</th>
 					<th>제품명</th>
 					<th>규격</th>
@@ -209,20 +275,18 @@
 					<th>바코드</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr class="info" th:each="pro : ${list}">
+			<tbody class="bodyClass">
+				<tr class="info" th:each="sell : ${list}">
 					<td><input type="checkbox" class="check_one"></td>
-					<td id="number"></td>
-					<td>[[${pro.pImg}]]</td>
-					<td>[[${pro.sPhase}]]</td>
-					<td>[[${pro.pNum}]]</td>
-					<td>[[${pro.pName}]]</td>
-					<td>[[${pro.pSize}]]</td>
-					<td>[[${pro.boxCount}]]</td>
-					<td>[[${pro.pWeight}]]</td>
-					<td>[[${pro.pFinish}]]</td>
-					<td>[[${pro.price}]]</td>
-					<td class="barcode-cell"></td>
+					<td id="number">${i+1}</td>
+					<td>[[${sell.pNum}]]</td>
+					<td>[[${sell.pName}]]</td>
+					<td>[[${sell.pSize}]]</td>
+					<td>[[${sell.boxCount}]]</td>
+					<td>[[${sell.pWeight}]]</td>
+					<td>[[${sell.pFinish}]]</td>
+					<td>[[${sell.pPrice}]]</td>
+					<td><svg></svg></td>
 				</tr>
 			</tbody>
 			<tfoot>
@@ -240,7 +304,6 @@
 		</div>
 </body>
 <script>
-	// 페이지 설정
 	let currentPage = 1; // 현재 페이지 번호를 저장할 변수 추가
 	const boards = document.querySelectorAll('.info');
 	const prevPageButton = document.getElementById('prevPage');

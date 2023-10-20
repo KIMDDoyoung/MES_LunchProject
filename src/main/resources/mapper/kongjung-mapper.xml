@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="PROCESS_NAME" property="processName" />
 		<result column="RECIPE_NUM" property="recipeNum" />
 		<result column="P_TIME" property="processTime" />
+		<result column="M_NUM" property="materialNo" />
 	</resultMap>
 	<!-- all리스트조회 -->
 	<select id="selectAllList" resultMap="process">
@@ -45,9 +46,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<!-- 삭제 메서드 추가 -->
-	<delete id="deleteKongjung" parameterType="long">
-		DELETE FROM PROCESS WHERE PROCESS_NUM = #{id}
+	<delete id="deletekongjung" parameterType="string">
+		DELETE FROM PROCESS WHERE PROCESS_NUM = #{processNum}
 	</delete>
+	
+		<!-- 삭제 메서드 추가 -->
+	<delete id="deletekongjung1" parameterType="string">
+		DELETE FROM RECIPE WHERE RECIPE_NUM = #{recipeNum}
+	</delete>
+	
+	<!-- 데이터 삽입을 위한 SQL 문 정의 -->
+    <insert id="KongjungInsert" parameterType="com.project.dto.KongjungDTO">
+    INSERT INTO PROCESS (PROCESS_NUM, M_NUM, PROCESS_NAME)
+    VALUES (#{processNum},  #{materialNo}, #{processName})
+	</insert>
+	
+	<select id="editKongjung" parameterType="String" resultMap="process">
+		select * from PROCESS where PROCESS_NUM = #{p_num}
+	</select>
+	
+	<select id="editRecipe" parameterType="String" resultMap="process">
+		select * from RECIPE where RECIPE_NUM = #{r0_num}
+	</select>
+	
+	<update id="updateKongjung" parameterType="map">
+    UPDATE PROCESS
+    SET
+    	PROCESS_NUM = #{processNum},
+    	M_NUM = #{materialNo},
+    	PROCESS_NAME = #{processName}
+    WHERE
+    PROCESS_NUM = #{processNum}
+	</update>
+	
 	
 	
 </mapper>

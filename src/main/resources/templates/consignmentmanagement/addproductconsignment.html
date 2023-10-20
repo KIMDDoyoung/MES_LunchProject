@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
 	<meta charset="UTF-8" />
@@ -39,32 +39,24 @@
 
 					}
 				},
-				error: function () {
-					alert("수주번호로 조회해주세요.");
+				error: function (xhr, status, error) {
+					console.log(error);
+					alert("수주번호로 조회가 가능합니다.");
 
 				}
 			});
 		});
-	});
-
-
-	function opendriverpopUp() {
-		$(".driverpopBg").show();
-	}
-
-
-	$(function () {
 		//btn_search 클릭시 실행될 함수(기사 검색)
 		$('#btn_search').click(function () {
 			//controller에서 선언한 kind값은 html의 kind /search동일
 			let data = {
-				kind : $("#kind").val(),
-				search : $("#search").val()
+				kind: $("#kind").val(),
+				search: $("#search").val()
 			}
 			console.log(data);
 			$.ajax({
 				url: '/AddProductConsignment/driverlist',
-				data:data,
+				data: data,
 				type: 'post',
 				dataType: 'json',
 				success: function (r) {
@@ -78,14 +70,26 @@
 
 						for (let i = 0; i < r.length; i++) {
 							tag += `<tr>`;
-							tag += `<td>${r[i].dNum}</td>`;
+							tag += `<td class="driver">${r[i].dNum}</td>`;
 							tag += `<td>${r[i].dContact}</td>`;
 							tag += `</tr>`;
 						}
 						console.log(tag)
 						$('#driver_data').html(tag);
-						
+
 						//td 코드 클릭시 해당 값이 기사번호에 기록
+						$('#driver_data tr').on('click', function () {
+							// 클릭된 td 요소에서 dNum 값을 가져옴
+							// td리스트를 tr로 선택될 수 있게 해서 해당 값 클릭될 수 있도록함
+							let dNumValue = $(this).children().first().text();
+
+							// 검색 input에 클릭한 td 값을 자동으로 입력
+							$(".driverCode").val(dNumValue);
+							console.log(dNumValue);
+
+							// driverpopBg를 숨깁니다.
+							$(".driverpopBg").hide();
+						});
 					}
 				}
 			})
@@ -107,32 +111,83 @@
 
 						for (let i = 0; i < r.length; i++) {
 							tag += `<tr>`;
-							tag += `<td>${r[i].dNum}</td>`;
+							tag += `<td class="driver";>${r[i].dNum}</td>`;
 							tag += `<td>${r[i].dContact}</td>`;
 							tag += `</tr>`;
 						}
 						console.log(tag)
 						$('#driver_data').html(tag);
-						
+
 						//td 코드 클릭시 해당 값이 기사번호에 기록
+						$('#driver_data tr').on('click', function () {
+							// 클릭된 td 요소에서 dNum 값을 가져옴
+							// td리스트를 tr로 선택될 수 있게 해서 해당 값 클릭될 수 있도록함
+							let dNumValue = $(this).children().first().text();
+
+							// 검색 input에 클릭한 td 값을 자동으로 입력
+							$(".driverCode").val(dNumValue);
+							console.log(dNumValue);
+
+							// driverpopBg를 숨깁니다.
+							$(".driverpopBg").hide();
+						});
 					}
 				}
 			})
 		})
-		
+		//데이터 전송
+		$('.add_consignment').submit(function (e) {
+			//add.preventDefault();
+			var sNum = $("#sNum").val();
+			var dateOrder = $("#dateOrder").val();
+			var dateToArrive = $("#dateToArrive").val();
+			var cNum = $("#cNum").val();
+			var address = $("#address").val();
+			var pNum = $("#pNum").val();
+			var sAmount = $("#sAmount").val();
+			var dateStartShip = $("#dateStartShip").val();
+			var shipAmount = $("#shipAmount").val();
+			var dNum = $("#dNum").val();
+			//var shipNum 컨트롤러에서 랜덤생성
+			if (sNum === '') {
+				alert('수주번호를 입력해주세요.');
+				e.preventDefault();
+				return;
+			}
+			if (dateStartShip === '') {
+				alert('출하 시작일을 입력해주세요.');
+				e.preventDefault();
+				return;
+			}
+
+			if (shipAmount === '') {
+				alert('출하 수량을 입력해주세요.');
+				e.preventDefault();
+				return;
+			}
+			
+			if (parseInt(shipAmount) > parseInt(sAmount)) {
+				alert('출하 수량은 요청수량을 초과할 수 없습니다.');
+				e.preventDefault();
+				return;
+			}
+			if (dNum === '') {
+				alert('기사코드가 입력되지 않았습니다.');
+				e.preventDefault();
+				return;
+			}
+		})
+
+
 	});
 
+
+	function opendriverpopUp() {
+		$(".driverpopBg").show();
+	}
 	function closedriverpopUp() {
 		$(".driverpopBg").hide();
 	}
-
-	function selectorder(orderNo) {
-		// 주문 번호를 입력 상자에 자동으로 입력
-		document.getElementById("orderNoInput").value = orderNo;
-		window.opener.selectorder(orderNo); // 부모 창의 함수 호출
-		window.close();
-	}
-
 </script>
 
 <body>
@@ -164,29 +219,32 @@
 		<br />
 		<br />
 		<h3>출하 등록</h3>
-		<form class="add_product_consignment" action="#" method="post" enctype="multipart/form-data">
+		<!--form으로 전달할 데이터들은 name으로 전달된다. id는 if나 다른 작업수행할때 편리하기 위해 작성-->
+		<form class="add_consignment" action="/AddProductConsignment/action" method="post">
 			<div id="table_div">
 				<table id="table1">
 					<tr>
 						<th>수주 번호<span style="color: red">*</span></th>
-						<td colspan="3"><input type="text" id="Obtainorder_search" th:value="${sNum}" />
+						<td colspan="3"><input type="text" id="Obtainorder_search" th:value="${sNum}" name="sNum" />
 							<button type="button" id="openorderlist">조회</button>
 							<p style="float: right;"><span style="color: red">*</span>수주번호 조회시 자동으로 입력됩니다.</p>
 						</td>
 					</tr>
 					<tr>
 						<th>접수일자<span style="color: red">*</span></th>
-						<td><input type="text" readonly th:value="${dateOrder}" id="dateOrder" /></td>
+						<td><input type="text" readonly th:value="${dateOrder}" id="dateOrder" name="dateOrder" /></td>
 						<th>납기일자<span style="color: red">*</span></th>
-						<td><input type="text" readonly th:value="${dateToArrive}" id="dateToArrive" /></td>
+						<td><input type="text" readonly th:value="${dateToArrive}" id="dateToArrive"
+								name="dateToArrive" /></td>
 					</tr>
 					<tr>
 						<th>사업자번호<span style="color: red">*</span></th>
 						<td>
-							<input type="text" readonly th:value="${cNum}" id="cNum" />
+							<input type="text" readonly th:value="${cNum}" id="cNum" name="cNum" />
 						</td>
 						<th>주소<span style="color: red">*</span></th>
-						<td><input type="text" readonly th:value="${address}" id="address" style="width: 300px;"></td>
+						<td><input type="text" readonly th:value="${address}" id="address" style="width: 300px;"
+								name="address"></td>
 					</tr>
 				</table>
 				<br />
@@ -203,27 +261,28 @@
 					<tbody>
 						<tr>
 							<td>
-								<input type="text" readonly th:value="${pNum}" id="pNum" />
+								<input type="text" readonly th:value="${pNum}" id="pNum" name="pNum" />
 							</td>
 							<td>
-								<input type="text" readonly th:value="${sAmount}" id="sAmount" />개
+								<input type="text" readonly th:value="${sAmount}" id="sAmount" name="sAmount" />개
 							</td>
 							<td>
-								<input type="date" />
+								<input type="date" id="dateStartShip" name="dateStartShip" />
 							</td>
 							<td>
-								<input type="text" placeholder="0" />개
+								<input type="text" placeholder="0" id="shipAmount" name="shipAmount" />개
 							</td>
 							<td>
-								<input type="text" placeholder="기사 번호 조회" readonly />
+								<input type="text" placeholder="기사 번호 조회" readonly class="driverCode" th:value="${dNum}"
+									id="dNum" name="dNum" />
 								<button type="button" id="opendriverlist" onclick="opendriverpopUp()">조회</button>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 				<div id="btn" style="float: right">
-					<button id="btn_back"><a href="ConsignmentManagement">돌아가기</a></button>
-					<button id="btn_add" onclick="btn_add()">등록</button>
+					<button id="btn_back"><a href="ConsignmentManagement" type="button">돌아가기</a></button>
+					<button id="btn_add" onclick="btn_add()" type="submit">등록</button>
 				</div>
 			</div>
 		</form>
@@ -236,17 +295,17 @@
 			<h3>기사 리스트</h3>
 			<div>
 				<select id="kind">
-					<option value="d_num">기사 코드</option>
+					<option value="d_num">기사 번호</option>
 					<option value="d_contact">연락처</option>
 				</select>
 				<input type="text" placeholder="검색" style="width: 150px;" id="search">
-				<button id="btn_search">검색</button>
+				<button type="button" id="btn_search">검색</button>
 			</div>
 			<br>
 			<br>
 			<table id="driver_list">
 				<thead>
-					<th style="width: 100px">기사 코드</th>
+					<th style="width: 100px">기사 번호</th>
 					<th style="width: 200px">기사 연락처</th>
 				</thead>
 				<tbody id="driver_data">

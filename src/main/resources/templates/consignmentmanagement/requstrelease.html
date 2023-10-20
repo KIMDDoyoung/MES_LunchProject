@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
 	<meta charset="UTF-8" />
@@ -14,7 +14,7 @@
 <body>
 	<th:block th:insert="header/header.html"></th:block>
 	<div id="requstrelease" class="req_rel">
-		<ul class="menu" style="width: 500px;">
+		<ul class="menu1" style="width: 500px;">
 			<li>
 				<a href="/main.html">
 					<img src="img/home.png" width="40" height="40" viewBox="0 0 51 51">
@@ -46,7 +46,7 @@
 					<td><input type="text" placeholder="등록정보에서 받아옴" readonly /></td>
 				</tr>
 				<tr>
-					<th>업체 명</th>
+					<th>사업자 번호</th>
 					<td>
 						<input type="text" placeholder="등록정보에서 받아옴" readonly />
 					</td>
@@ -60,7 +60,7 @@
 			<table id="table2">
 				<thead>
 					<tr>
-						<th style="width: 100px;">바코드</th>
+						<th style="width: 100px;">출하코드</th>
 						<th style="width: 150px;">제품 명</th>
 						<th style="width: 100px;">요청 수량</th>
 						<th style="width: 150px;">수주 번호</th>
@@ -71,7 +71,7 @@
 				</thead>
 				<tbody>
 					<tr id="list">
-						<td>0</td>
+						<td></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -91,7 +91,7 @@
 					<th>총 출고 수량</th>
 				</tr>
 				<tr>
-					<td>0</td>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -103,7 +103,7 @@
 				<thead>
 					<tr>
 						<th>수주 번호</th>
-						<th>업체 명</th>
+						<th>사업자 번호</th>
 						<th>품목 번호</th>
 						<th>요청 수량</th>
 						<th>출고 수량</th>

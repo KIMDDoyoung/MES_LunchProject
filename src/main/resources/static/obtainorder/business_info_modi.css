@@ -2,59 +2,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR&display=swap');
 
 .All{
+	margin: 0px auto;
     width: 1426px;
     height: 1117px;
 }
-.header{
-    margin-left: 45.81px;
-    margin-top: 55px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.obtainheader {
+	margin-top: 55px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 }
-.header .source{
-    margin: 10px 18.51px;
+
+.obtainheader .source {
+	margin: 10px;
 }
-.header #headText{
-    color: #000;
-    font-family: Inter;
-    font-size: 25px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    text-decoration: none;
+.obtainheader #arrow{
+	width: 12px;
+	height: 100%;
 }
-.header #home{
-    width: 50.157px;
-    height: 50.157px;
-    flex-shrink: 0;
+
+.obtainheader #headText {
+	color: #000;
+	font-family: Inter;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: normal;
+	text-decoration: none;
 }
-h1{
+
+.obtainheader #home {
+	width: 30px;
+	height: 100%;
+	flex-shrink: 0;
+}
+h2{
     margin-left: 40px;
     margin-top: 29.84px;
     color: #000;
     font-family: Inter;
-    font-size: 45px;
+    font-size: 24px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: bold;
     line-height: normal;
 }
 .modi_form{
     margin: 0px auto;
     width: 851px;
-    height: 663px;
+    height: auto;
     flex-shrink: 0;
     border-radius: 8px;
     border: 2px solid #000;
     margin-top: 24px;
-    display: block;
     overflow: hidden;
+    display: block;
     border-collapse: collapse;
 }
 .modi_form td:not(.thead){
     width: 716px;
     flex-shrink: 0;
     border: 1px solid #000;
+    border-right: none;
     background: #FFF;
 }
 .thead{
@@ -62,6 +70,7 @@ h1{
     height: 31px;
     flex-shrink: 0;
     border: 1px solid #000;
+    border-left: none;
     background: rgba(240, 128, 128, 0.20);
     
     color: #000;
@@ -71,6 +80,9 @@ h1{
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+}
+.thead:first-child{
+    border-top: none;
 }
 .inputtext{
     width: 95px;
@@ -169,7 +181,7 @@ h1{
     border: none;
     margin-left: 5px;
 }
-.btn_delete, .btn_modi{
+.btn_cancel, .btn_modi{
     width: 145px;
     height: 50px;
     flex-shrink: 0;
@@ -185,7 +197,7 @@ h1{
     font-weight: 400;
     line-height: normal;
 }
-#btn_check:hover, .btn_delete:hover, .btn_modi:hover{
+#btn_check:hover, .btn_cancel:hover, .btn_modi:hover{
     background-color: #FFF;
     border: 2px solid #F08080;
 

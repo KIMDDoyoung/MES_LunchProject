@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/common/global.css" />
+	<link rel="stylesheet" href="/stock/stock_product_app.css" />
+	<title>완제품 재고 현황</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/JsBarcode.code128.min.js"></script>
+<script src="/js/bxlcommon.js"></script>
+<script src="/js/bxllabel.js"></script>
+<script>
+	function showBarcode() {
+		let row = $(".tableContent tr");
+		$(row).each(function (idx, obj) {
+			let barcodeValue = $(obj).children("td").eq(2).text();
+			$(obj).children("td").last();
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {
+				format: "CODE128",
+				width: 1,
+				height: 20,
+				displayValue: false
+			})
+
+
+		});
+	}
+	
+	var issueID = 1;
+	var printer_name = 'Printer1';
+
+	function viewResult(result) {
+		console.log(result);
+	}
+
+	function PrintBarcode(row) {
+		console.log(row);
+		var barCodeSymbol = 1;
+		var barCodeHeight = 100;
+		var barWidth = 4;
+		var nBarWidth = parseInt(barWidth / 2);
+		var barCodeHri = 1;
+
+		setLabelId(issueID);
+
+		checkLabelStatus();
+		clearBuffer();
+		
+		setWidth(576);
+		
+		drawDeviceFont("제품 정보",30,10,'b',1,1,0,0,1,0);
+		drawBlock(30,40,530,45,'B',5);
+		
+		drawDeviceFont(`제품번호 : ${$(row).eq(0).text()}`,30,50,'a',1,1,0,0,0,0);
+		drawDeviceFont(`제품명 : ${$(row).eq(1).text()}`,30,50,'a',1,1,0,0,0,0);
+		drawDeviceFont(`제품 수량 : ${$(row).eq(2).text()}`,30,70,'a',1,1,0,0,0,0);
+		
+		drawBlock(30,180,530,185,'B',5);
+		draw1DBarcode($(row).eq(0).text(), 70, 200, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+		printBuffer();
+		
+		var strSubmit = getLabelData();
+
+		console.log(strSubmit);
+
+		issueID++;
+		requestPrint(printer_name, strSubmit, viewResult);
+
+	}
+	
+	function printCount(){
+		let row = $(".tableContent tr").length;
+		row += "개의 데이터가 조회되었습니다."
+		$("#data").html(row)
+	}
+
+	function searchProduct() {
+		let data = {
+			search: $("#search_input").val()
+		};
+
+		$.ajax({
+			url: '/stock/product/search',
+			data: data,
+			type: 'post',
+			dataType: 'json',
+			success: function (r) {
+				console.log(r);
+				var tag = "";
+
+				if (r.length === 0) {
+					tag = "<tr style='text-align:center';><td colspan='5'>일치하는 정보가 없습니다.</td></tr>";
+					$('.tableContent').html(tag);
+					$("#data").html("0개의 데이터가 조회되었습니다.");
+				} else {
+					for (let i = 0; i < r.length; i++) {
+						tag += `<tr id="contents"> `
+						tag += `<td>${r[i].p_name}</td>`;
+						tag += `<td>${r[i].p_amount}</td>`;
+						tag += `<td style="text-align: center;"><span id="barcodeID" hidden>${r[i].p_num}</span><svg></svg></td>`;
+						tag += `</tr>`
+					}
+
+
+					$('.tableContent').html(tag);
+					showBarcode();
+					printCount();
+				}
+			}
+		});
+	}
+
+	$(function () {
+		printCount();
+		$('#btn_search').click(searchProduct);
+
+		showBarcode();
+
+		$("#search_input").keyup(function (e) {
+			if (e.keyCode == 13)
+				searchProduct();
+		});
+		
+		$("svg").click(function () {
+			let row = $(this).parent().parent().children("td");
+			PrintBarcode(row);
+		});
+		
+		$('#btn_delete').click(function () {
+			let select = $('input[name="chk"]:checked');
+			console.log(select);
+			if (select.length === 0) {
+				alert('항목이 선택되지 않았습니다.');
+			} else {
+				if (confirm('삭제하시겠습니까?')) {
+					select.each(function () {
+						var pNum = $(this).parent().children("span").eq(0).text();
+						console.log(pNum);
+						$.ajax({
+							url: '/stock/product/delete/' + pNum,
+							type: 'post',
+							dataType: 'json',
+							success: function (r) {
+								alert(r.message);
+								window.location.href = window.location.href;
+							},
+							error: function (xhr, status, error) { // 오류를 확인하도록 수정
+								console.error(error); // 콘솔에 오류 출력
+								alert("오류 발생: " + error); // 사용자에게 오류 메시지 표시
+							}
+						});
+					});
+				} else {
+					console.log("취소");
+				}
+			}
+		});
+
+
+	});
+
+
+
+
+</script>
+
+<body>
+	<div id="container">
+		<h3>완제품 재고 관리</h3>
+
+		<div id="search">
+			<input type="text" id="search_input" placeholder="검색" />
+			<button id="btn_search">검색</button>
+		</div>
+		<table id="table">
+			<tr>
+				<th style="width: 30%">제품명</th>
+				<th>제품 수량</th>
+				<th style="width: 40%">바코드</th>
+			</tr>
+			<tbody class="tableContent">
+				<tr th:each="p : ${list}" id="contents">
+					<td>[[${ p.p_name}]]</td>
+					<td>[[${ p.p_amount}]]</td>
+					<td style="text-align: center;"><span id="barcodeID" hidden>[[${ p.p_num}]]</span><svg></svg></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+<script>
+
+	function checkSelectAll(checkbox) {
+		const selectall = document.querySelector('#all_check');
+
+		if (checkbox.checked === false) {
+			selectall.checked = false;
+		}
+	}
+	function selectAll(selectAll) {
+		const checkboxes = document.getElementsByName('chk');
+
+		checkboxes.forEach((checkbox) => {
+			checkbox.checked = selectAll.checked;
+		})
+	}
+</script>
+
+</html>

@@ -12,11 +12,11 @@
 	padding-left: 10px;
 }
 
-#search {
+/*#search {
 	float: right;
-}
+}*/
 
-#search button {
+#btn_search{
 	color: #fff;
 	width: 50px;
 	height: 20px;

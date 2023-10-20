@@ -8,17 +8,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
+	<th:block th:insert="header/header.html"></th:block>
     <div class="All">
-        <div class="header">
+        <div class="obtainheader">
             <a href="/mainpage">
             	<img src="/img/home.png" alt="" class="source" id="home">
             </a>
             <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">수주관리</a>
+            <a href="/ObtainOrder" class="source" id="headText">수주관리</a>
             <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">수주등록</a>
+            <a href="/ObtainOrder" class="source" id="headText">수주등록</a>
         </div>
-        <h1>수주등록</h1>
+        <h2>수주등록</h2>
         <div class="form">
             <table>
                 <tr>

@@ -136,6 +136,17 @@ background-color: #ffbebe;
 
 	}
 
-
+footer {
+	width: 100%;
+	  position: absolute;
+	height: 96px;
+	background-color: #ffbebe;
+	color: #fff;
+	text-align: center;
+	bottom: 0;
+	margin: 0 auto;
+	padding: 15px 0;
+	font-family: 'Noto Sans KR', sans-serif;
+}
 
 

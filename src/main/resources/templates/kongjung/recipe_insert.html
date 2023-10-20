@@ -2,12 +2,14 @@
 <html>
 
 <head>
-	<meta charset="EUC-KR">
+	<meta charset="UTF-8">
 	<title>공정 정보</title>
 	
 	<th:block th:include="header/header.html"></th:block>
 	<link rel="stylesheet" href="/Kongjung/recipe_insert.css">
 	<link rel="stylesheet" href="/common/global.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 </head>
 
@@ -16,18 +18,18 @@
 		<ul class="menu1" style="width: 1250px;">
 			<li>
 				<a href="/main.html">
-					<img src="img/home.png" width="40" height="40" viewBox="0 0 51 51">
+					<img src="/img/home.png" width="40" height="40" viewBox="0 0 51 51">
 				</a>
 			</li>
 			<div style="margin-top: 15px;" width="300px" id="menu2">
 				<li>
-					<img src="img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
+					<img src="/img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
 				</li>
 				<li>
 					<h4>공정 관리</h4>
 				</li>
 				<li>
-					<img src="img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
+					<img src="/img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
 				</li>
 				<li>
 					<h4>통합 레시피 등록</h4>
@@ -42,24 +44,24 @@
 					<thead>
 						<tr>
 							<th id="col">레시피코드</th>
-							<th></th>
+							<th><input type="text" id="recipeNum" name="recipeNum" style="float:left" required readonly></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							
-							<td id="col1">공정번호</td>
-							<td id="col2"></td>
+							<td id="col1">소요시간</td>
+							<td id="col2"><input type="text" id="processTime" name="processTime" style="float:left" required></td>
 						</tr>
 						<tr>
-							<td id="col3">레시피명 </td>
-							<td></td>
+							<td id="col3">레시피 설명</td>
+							<td><input type="text" id="processNo" name="processNo" style="float:left" required></td>
 						</tr>
 					</tbody>
 				</table>				
 		</div>
 		<div id="btn">
-			<button id="btn_cancle" onclick="location.href='recipeinfo'"  style="float: right">취소</button>
+			<button id="btn_cancle" onclick="location.href='recipe_info'"  style="float: right">취소</button>
                <button id="btn_insert" onclick="btn_insert()"  style="float: right">등록</button>
             </div>
 	</div>

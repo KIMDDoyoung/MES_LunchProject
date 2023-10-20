@@ -7,6 +7,26 @@
     <link rel="stylesheet" href="common/header.css">
     <link rel="stylesheet" href="/order/order_register_edit.css">
 </head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#editButton").click(function(){
+            var formData = $("#orderEditform").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/updateOrder", 
+                data: formData,
+                success: function(data){
+                    alert("수정이 완료되었습니다.");
+                    location.href = "/Order";
+                },
+                error: function(){
+                    alert("수정에 실패했습니다.");
+                }
+            });
+        });
+    });
+</script>
 <body>
 <th:block th:include="header/header.html"></th:block>
        <!-- 발주수정 부분 -->
@@ -35,39 +55,24 @@
                     </svg>
                 </li>
                 <li>
-                    <a href="#">발주수정</a>
+                    <a href="order/order_register_edit">발주수정</a>
                 </li>
             </ul>
             <!--lnb -->
             <div id="sub_con_wrap">
-                <form method="post" class="sub_con">
+				<!--form 시작-->
+                <form method="post" class="sub_con" id="orderEditform" action="/editOrder">
                     <div class="tit_box">
                         <h2 class="sub_tit">발주 수정</h2>
-                        <p class="sub_txt">
-                            <span>2</span>개의 데이터가 조회되었습니다.
-                        </p>
                     </div>
-                    <!-- tit_box -->
-                    <table id="table_reg">
-                        <tr>
-                            <th>발주일자</th>
-                            <td>
-                                <input type="date" class="btn_candle input_calendar" id='input_date1' name="inout_date1">
-                            </td>
-                            <th>납기일자</th>
-                            <td>
-                                <input type="date" class="btn_candle input_calendar" id='input_date3' name="inout_date3"> 
-                            </td>
-                        </tr>
-                    </table>
                     <!-- search_pc -->
                     <table id="table" class="result_table">
                         <thead>
                             <tr>
+                                <th>발주번호</th>
                                 <th>협력업체</th>
-                                <th>제품번호</th>
-                                <th>제품명</th>
-                                <th>등록일자</th>
+                                <th>재료번호</th>
+                                <th>원부재료명</th>
                                 <th>발주일자</th>
                                 <th>납기일자</th>
                                 <th>발주수량</th>
@@ -76,43 +81,43 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <input type="text">
+                                    <input type="text"  name="buyNo" th:value="${orderDetails.buyNo}" readonly>
                                 </td>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" name="buyName" th:value="${orderDetails.buyName}" readonly>
                                 </td>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" name="materialNo"th:value="${orderDetails.materialNo}" readonly>
                                 </td>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" name="materioalName" th:value="${orderDetails.materioalName}" readonly>
                                 </td>
                                 <td>
-                                    <input type="text">
+                                    <input type="date" name="dateOrder" th:value="${orderDetails.dateOrder}">
                                 </td>
                                 <td>
-                                    <input type="text">
+                                    <input type="date" name="dateReceived" th:value="${orderDetails.dateReceived}">
                                 </td>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" name="materioalAmount" th:value="${orderDetails.materioalAmount}" >
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="bot_box">
                         <div class="bot_btn">
-                            <div class="btn delete" title="선택삭제">뒤로가기</div>
-                            <div class="btn btn_right" title="등록" onclick="location.href='/Order'">수정</div>
+                            <div class="btn delete" title="reset">
+								<button type="reset">초기화</button>
+							</div>
+                           <div class="btn btn_right" title="수정">
+								<button type="submit" id="editButton">수정</button>
+							</div>
                         </div>
                         <!-- bot_btn -->
                     </div>
-                    <!-- bot_box -->
+                   <!-- bot_box -->
                 </form>
                 <!--con-->
-            </div>
-            <div id="lay" style="overflow: auto;">
-                <div class="bg"></div>
-                <div id="lay2"></div>
             </div>
         </div>
         <!--content-->

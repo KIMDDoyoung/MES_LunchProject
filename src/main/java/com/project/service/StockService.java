@@ -57,4 +57,20 @@ public class StockService {
 		return mapper.UpdateProduct(dto);
 	}
 
+	public List<Stock_MaterialDTO> SearchMaterial(String search) {
+		return mapper.SearchMaterial(search);
+	}
+
+	public List<Stock_ProductDTO> SearchProduct(String search) {
+		return mapper.SearchProduct(search);
+	}
+
+	public int DeleteMaterial(String mNum) {
+		return mapper.DeleteMaterial(mNum);
+	}
+
+	public int DeleteProduct(String pNum) {
+		return mapper.DeleteProduct(pNum);
+	}
+
 }

@@ -1,125 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/obtainorder/business_info_modi.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/obtainorder/business_info_modi.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
+<script>
+	$(function () {
+		$('.btn_cancel').click(function () {
+			window.location.href = '/BusinessInfo';
+		});
+	});
+	window.onload = () => {
+		const businessCode = document.getElementById("insert_email"); // 이메일 입력 필드
+		const phoneInput = document.getElementById("insert_phone_number"); // 휴대폰 번호 입력 필드
+		const verificationInput = document.querySelector("#insert_confirm1"); // 인증번호 입력 필드
+		const verificationInput1 = document.querySelector("#insert_confirm2"); // 인증번호 입력 필드
+		const verificationCheckbox = document.querySelector("#phonecheck"); // 휴대전화로 인증 체크박스
+		const verificationCheckbox1 = document.querySelector("#emailcheck"); // 이메일로 인증 체크박스
+
+		searchButton.addEventListener('click', (e) => {
+
+			var phoneCheckbox = document.querySelector("#phonecheck");
+			var emailCheckbox = document.querySelector("#emailcheck");
+			if (!isIdVerified) {
+				alert("고객업체 코드 중복검사를 해주세요.");
+			} else {
+
+				if (!emailCheckbox.checked && !phoneCheckbox.checked) {
+					e.preventDefault();
+					alert("본인확인 방법을 선택해야 합니다.");
+				} else {
+					if (emailCheckbox.checked) {
+						if (emailInput.value.trim() === "") {
+							alert("이메일 주소를 입력해주세요.");
+						} else {
+							if (insertName2.value.trim() === "") {
+								alert("이름을 입력해주세요.");
+							} else {
+								sendEmailVerification();
+							}
+						}
+					} else if (phoneCheckbox.checked) {
+						if (phoneInput.value.trim() === "") {
+							alert("휴대폰 번호를 입력해주세요.");
+						} else {
+							if (insertName1.value.trim() === "") {
+								alert("이름을 입력해주세요.");
+							} else {
+								sendSMSVerification();
+							}
+						}
+					}
+				}
+			}
+
+		});
+	}
+</script>
+
 <body>
-    <div class="All">
-        <div class="header">
+	<th:block th:insert="header/header.html"></th:block>
+	<div class="All">
+		<div class="obtainheader">
 			<a href="/mainpage">
-            	<img src="/img/home.png" alt="" class="source" id="home">
-            </a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">수주관리</a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">고객업체 정보</a>
-        </div>
-        <h1>고객업체 정보 수정</h1>
-       <table class="modi_form">
-        <tr>
-            <td class="thead">고객업체 코드<span class="red">*</span></td>
-            <td class="check">
-                <input type="text" class="inputtext" id="business_code">
-                <button type="button" id="btn_check">중복검사</button>
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">고객업체명<span class="red">*</span></td>
-            <td><input type="text" class="inputtext" id="business_name"></td>
-        </tr>
-        <tr>
-            <td class="thead">대표자명</td>
-            <td><input type="text" class="inputtext" id="leader"></td>
-        </tr>
-        <tr>
-            <td class="thead">사업자 등록번호</td>
-            <td><input type="text" class="inputtext" id="business_registration_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">전화번호</td>
-            <td class="div_tel"><input type="text" class="tel" id="tel_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">핸드폰번호</td>
-            <td class="div_tel"><input type="text" class="tel" id="phone_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">FAX</td>
-            <td class="div_tel"><input type="text" class="tel" id="FAX_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">이메일</td>
-            <td><input type="text" class="inputtext" id="email1"> @
-                <input type="text" class="inputtext" id="email2">
-                <select name="" id="email_domain">
-                    <option value="">직접입력</option>
-                    <option value="naver.com">naver.com</option>
-                    <option value="daum.net">daum.net</option>
-                    <option value="gmail.com">gmail.com</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">주소</td>
-            <td>
-                <div class="address_div">
-                    <input type="text" placeholder="우편번호" class="address">
-                    <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                </div>
-                <input type="text" class="address_input" id="business_address1" placeholder="도로명 주소를 입력하세요.">
-                <br>
-                <input type="text" class="address_input" id="business_address2" placeholder="상세 주소를 입력하세요.">
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">납품처 주소</td>
-            <td>
-                <div class="address_div">
-                    <input type="text" placeholder="우편번호" class="address">
-                    <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                </div>
-                <input type="text" class="address_input" id="vendor_address1" placeholder="도로명 주소를 입력하세요.">
-                <br>
-                <input type="text" class="address_input" id="vendor_address2" placeholder="상세 주소를 입력하세요.">
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">담당자명</td>
-            <td class="div_tel"><input type="text" class="inputtext" id="contact_person"></td>
-        </tr>
-        <tr>
-            <td class="thead">담당자 전화번호</td>
-            <td class="div_tel"><input type="text" class="tel" id="contact_phone_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">담당자 이메일</td>
-                <td><input type="text" class="inputtext" id="contact_email1"> @
-                    <input type="text" class="inputtext" id="contact_email2">
-                    <select name="" id="contact_email_domain">
-                        <option value="">직접입력</option>
-                        <option value="naver.com">naver.com</option>
-                        <option value="daum.net">daum.net</option>
-                        <option value="gmail.com">gmail.com</option>
-                    </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">결제조건</td>
-            <td><input type="text" class="inputtext_payment" id="terms_of_payment"></td>
-        </tr>
-        <tr>
-            <td class="thead">기타</td>
-            <td><input type="text" class="inputtext_etc" id="etc"></td>
-        </tr>
-       </table>
-    <div class="btn_area">
-        <button value="button" class="btn_delete">삭제</button>
-        <button value="button" class="btn_modi">수정</button>
-    </div>
-    </div>
+				<img src="/img/home.png" alt="" class="source" id="home">
+			</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/BusinessInfo" class="source" id="headText">수주관리</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/BusinessInfo" class="source" id="headText">고객업체 정보</a>
+		</div>
+		<h2>고객업체 정보 수정</h2>
+		<form method="post" action="/business/update">
+			<table class="modi_form">
+				<tr>
+					<td class="thead">고객업체명<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="business_name" name="sName" th:value="${sell.sName}"></td>
+				</tr>
+				<tr>
+					<td class="thead">대표자명<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="leader" name="cLeader" th:value="${sell.cLeader}"></td>
+				</tr>
+				<tr>
+					<td class="thead">사업자 등록번호<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="business_registration_num" name="cNum" th:value="${sell.cNum}" readonly></td>
+				</tr>
+				<tr>
+					<td class="thead">전화번호</td>
+					<td class="div_tel"><input type="text" class="tel" id="tel_num" name="cTel" th:value="${sell.cTel}"></td>
+				</tr>
+				<tr>
+					<td class="thead">핸드폰번호</td>
+					<td class="div_tel"><input type="text" class="tel" id="phone_num" name="cPhone" th:value="${sell.cPhone}"></td>
+				</tr>
+				<tr>
+					<td class="thead">FAX</td>
+					<td class="div_tel"><input type="text" class="tel" id="FAX_num" name="cFax" th:value="${sell.cFax}"></td>
+				</tr>
+				<tr>
+					<td class="thead">이메일</td>
+					<td><input type="text" class="tel" id="email" name="cMail" th:value="${sell.cMail}"></td>
+				</tr>
+				<tr>
+					<td class="thead">주소</td>
+					<td>
+						<input type="text" class="address_input" id="business_address" placeholder="주소를 입력하세요."
+							name="address" th:value="${sell.address}">
+					</td>
+				</tr>
+			</table>
+			<div class="btn_area">
+				<button type="button" class="btn_cancel">취소</button>
+				<button type="submit" class="btn_modi" style="cursor: pointer;">수정</button>
+			</div>
+		</form>
+	</div>
 </body>
+
 </html>

@@ -7,10 +7,48 @@
 		<id column="ID" property="userId" />
 		<result column="PW" property="passwd" />
 		<result column="NAME" property="name" />
+		<result column="PART_NO" property="partno"/>
 		</resultMap>
-		
+		<!-- //로그인 -->
 		<select id="login" parameterType="Map" resultMap="user">
 		select * from ACCOUNT 
 		where ID like #{userId} and PW like #{passwd}
 		</select>
+		<!-- //회원가입 -->
+	<insert id="insertUser" parameterType="user">
+		insert into ACCOUNT
+		values(#{userId}, #{passwd}, #{partno},#{name},
+		,'register')
+	</insert>
+	<!-- //회원가입 ID 중복검사 -->
+	<select id="UserCheckId" parameterType="user" resultType="String">
+		select
+		count(*) from ACCOUNT where ID = #{userId}
+	</select>
+	  <!-- 비밀번호 체크 -->
+    <select id="checkPasswd" parameterType="string" resultType="string">
+       select * from ACCOUNT where PW = #{passwd}
+   </select>
+   <!-- //비밀번호 변경 -->
+	<update id="updatePasswd" parameterType="user">
+		update ACCOUNT set PW
+		= #{passwd} where PW = #{passwd}
+	</update>
+	<!-- 비밀번호 찾기 아이디인증용 아이디 조회 -->
+   <select id="searchId" parameterType="string" resultType="string">
+       select ID from ACCOUNT where ID = #{userId}
+   </select>
+   <!-- 비밀번호 찾기 아이디인증용 부서번호 조회 -->
+   <select id="checkPartNo" parameterType="string" resultType="string">
+       select PART_NO from ACCOUNT where PART_NO = #{partno}
+   </select>
+   <!-- 아이디 찾기 -->
+   <select id="findId" parameterType="user">
+select ID from ACCOUNT where NAME = #{name} and PART_NO = #{partno}
+</select>
+   <select id="getUserByUserId" parameterType="String" resultType="user">
+        SELECT ID
+        FROM ACCOUNT
+        WHERE ID = #{userId}
+    </select>
 		</mapper>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>비밀번호찾기</title>
+</head>
+<style>
+   @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+   let isIdVerified = false;
+   function comfirm_id() {
+      let data = `insertId=${$("#insert_id").val()}`;
+      $.ajax({
+         url: '/comfirm/id',
+         data: data,
+         type: 'post',
+         dataType: 'json',
+         success: function (r) {
+            if (r == 1) {
+               isIdVerified = true; // 아이디 인증 상태를 true로 변경
+               // 팝업 표시
+              alert("아이디 인증에 성공했습니다.");
+            } else {
+               alert("아이디 인증에 실패했습니다. 다시 시도하십시오.");
+            }
+         }
+      });
+    }
+    let isPartnoVerified = false;
+    function comfirm_partno(){
+		let data1 = `insertpartno=${$("#insert_partno").val()}`
+		 $.ajax({
+         url: '/comfirm/partno',
+         data: data1,
+         type: 'post',
+         dataType: 'json',
+         success: function (f) {
+            if (f == 1) {
+               isPartnoVerified = true; // 부서번호 인증 상태를 true로 변경
+            } 
+         }
+      });
+	}
+   $(function () {
+      $('.btn_confirm1').click(comfirm_id);
+   });
+   $(function () {
+      $('.btn_confirm3').click(comfirm_partno);
+   });
+   
+</script>
+<style>
+   /* id는 # class는 . */
+fieldset{
+		border: 2px solid #ffbebe;
+border-radius: 5px;
+}
+   a {
+      text-align: center;
+      margin-top: 45px;
+      color: #ffbebe;
+      font-family: 'Jua', sans-serif;
+      font-size: 40px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      letter-spacing: 0.4px;
+      -webkit-text-stroke: 1px #555050;
+   }
+
+
+
+   .header {
+      display: flex;
+      flex-direction: row;
+   }
+ 
+
+   h2 {
+      margin: 60px auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #000;
+      text-align: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+      /* 83.333% */
+
+   }
+
+   .confirm {
+      width: 266px;
+      height: 28px;
+      flex-shrink: 0;
+      color: #6B6767;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 100;
+      line-height: 28px;
+      /* 200% */
+      -webkit-text-stroke: 0px;
+
+   }
+
+   .btn_confirm1 {
+      vertical-align: center;
+      width: 121px;
+      height: 44px;
+      padding: 0px 15px;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      border-radius: 5px;
+      border: 1px solid #D3D3D3;
+      background: #ffbebe;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+      color: #FFF;
+      text-align: center;
+      text-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 28px;
+      /* 140% */
+      cursor: pointer;
+   }
+
+   .btn {
+      display: flex;
+      flex-direction: row;
+
+   }
+
+   .btn_confirm2,
+   .btn_confirm3 {
+      margin: 10px auto;
+      margin-bottom: 30px;
+      margin-top: 30px;
+      display: flex;
+      width: 168px;
+      padding: 10px 15px;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 5px;
+      border: 1px solid #D3D3D3;
+      background: #ffbebe;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+      color: #FFF;
+      text-align: center;
+      text-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 28px;
+      /* 140% */
+      cursor: pointer;
+   }
+
+   .check_confirm {
+      display: inline-block;
+      background-color: #BF9BFA;
+      border-radius: 5px;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #A3A3A4;
+      margin: 0px 5px;
+   }
+
+   .change_passwd {
+      margin: 0px;
+      color: #FFF;
+      text-align: center;
+      text-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 60px;
+      /* 300% */
+      -webkit-text-stroke: 0px;
+      text-decoration: none;
+   }
+
+   button:hover {
+      background-color: #ffbebe;
+   }
+
+   #insert_id,
+   #insert_partno {
+      margin: 5px auto;
+      margin-left: 25px;
+      padding-left: 40px;
+   }
+
+   div>input {
+      padding-left: 20px;
+      width: 402px;
+      height: 44px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: 1px solid #9A9595;
+      background: rgba(200, 100, 100, 0.00);
+      color: #9A9595;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      letter-spacing: 0.12px;
+   }
+
+   .input_confirm img {
+      padding: 0px 10px;
+      top: 5%;
+      left: 1%;
+      position: absolute;
+      width: 24px;
+      height: 24px;
+   }
+   .input_id img {
+	  top: 30%;
+      left: 7%;
+      position: absolute;
+      width: 24px;
+      height: 24px;
+   }
+   .input_partno img{
+	    top: 38%;
+      left: 7%;
+      position: absolute;
+      width: 24px;
+      height: 24px;
+   }
+
+   .input_id,.input_partno{
+      width: 500px;
+      margin: 18px auto;
+   }
+
+   .center, .center1 {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+   }
+
+   #insert_id {
+      width: 272px;
+      height: 44px;
+      flex-shrink: 0;
+      margin-right: 8px;
+   }
+    #insert_partno {
+      width: 272px;
+      height: 44px;
+      flex-shrink: 0;
+      margin-right: 8px;
+   }
+   p {
+      margin: 0px 0px 10px 25px;
+      width: 407px;
+      height: 26px;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #6B6767;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      letter-spacing: 0.12px;
+   }
+
+   .center,.center1,
+   .input_confirm{
+      position: relative;
+   }
+
+   li {
+      list-style-type: none;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px;
+      margin: 0px 50px;
+
+   }
+
+   .true {
+      color: blue;
+   }
+
+   .false {
+      color: red;
+   }
+
+   #popup {
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 200px;
+      position: absolute;
+      background-color: #ffffff;
+      border: 5px solid #ffbebe;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+   }
+   #search_pass{
+	       position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 100%;
+   }
+</style>
+<script>
+   window.onload = () => {
+      const insertId = document.querySelector("#insert_id");// 이름 입력
+      const insertPartNo = document.querySelector("#insert_partno"); // 부서 번호 입력
+      const searchButton = document.querySelector(".btn_confirm1"); // 이름 인증 버튼
+      const confirmButton = document.querySelector(".btn_confirm3"); // 이름 부서번호 확인버튼
+      let serverVerificationCode = "123456";
+
+    
+      confirmButton.addEventListener('click', (e) => {
+         if (!isIdVerified || !isPartnoVerified){
+            alert("아이디 또는 부서 번호 입력을 해주세요.");
+         } 
+
+      });
+      }
+
+</script>
+
+<body>
+   <div id="search_pass">
+	<fieldset>
+      <div class="header">
+      <legend><img src="/img/logo5.png"></legend>
+      </div>
+      
+         <div class="input_id">
+            <div class="center">
+               <div>
+                  <img src="img/people.png" alt="">
+                  <input type="text" id="insert_id" placeholder="아이디 입력">
+            <li class="id_result"></li>
+               </div>
+               <button type="button" class="btn_confirm1">인증</button><br>
+         </div>
+         <div class="center1">
+         <div class="input_partno">
+            <img src="/img/part.png" alt="">
+            <input type="text" id="insert_partno" maxlength="10" placeholder="부서 번호">
+            </div>
+         </div>
+         </div>
+     
+     
+         
+         
+            <button class="btn_confirm3">확인</button>
+	</fieldset>
+         </div>
+     
+</body>
+
+</html>

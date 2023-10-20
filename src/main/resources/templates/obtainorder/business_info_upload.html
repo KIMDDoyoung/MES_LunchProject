@@ -1,236 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/obtainorder/business_info_upload.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/obtainorder/business_info_upload.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <script>
+	$(function () {
+		$('.btn_cancel').click(function () {
+			window.location.href = '/BusinessInfo';
+		});
+	});
+	window.onload = () => {
+		const businessCode = document.getElementById("insert_email"); // 이메일 입력 필드
+		const phoneInput = document.getElementById("insert_phone_number"); // 휴대폰 번호 입력 필드
+		const verificationInput = document.querySelector("#insert_confirm1"); // 인증번호 입력 필드
+		const verificationInput1 = document.querySelector("#insert_confirm2"); // 인증번호 입력 필드
+		const verificationCheckbox = document.querySelector("#phonecheck"); // 휴대전화로 인증 체크박스
+		const verificationCheckbox1 = document.querySelector("#emailcheck"); // 이메일로 인증 체크박스
 
-let isIdVerified = false;
-function verified_id(){
-    $.ajax({
-         url: '/comfirm/id',
-         data: data,
-         type: 'post',
-         dataType: 'json',
-         success: function (r) {
-            if (r == 1) {
-               isIdVerified = true; // 아이디 인증 상태를 true로 변경
-               // 팝업 표시
-               $("#popup").show();
-               $("#check").css({
-                  "color": "#0D6EFD",
-                  "font-weight": "bold",
-                  "font-size": "10px"
-               })
-               $(".id_result").html("<span id='check'>아이디 인증 완료</span>");
-            } else {
-               alert("아이디 인증에 실패했습니다. 다시 시도하십시오.");
-            }
-         }
-      });
-      // 팝업 닫기
-      $("#close_popup").click(function () {
-         $("#popup").hide();
-      });
-}
-    function upload_business_info(){
-        $.ajax({
-            url: '/business/upload/',
-            type: 'post',
-            dataType: 'json',
-            success:(r)=>{
-				if(Number(r.count) == 0){
-					alert(r.message);
-				}else{
-					alert(r.message);
-					location.reload();
-				}	
-            }			
+		searchButton.addEventListener('click', (e) => {
 
-        });
-    }
-    $(function(){
-        $('.btn_upload').click(upload_business_info);
-        $('.btn_cancel').click(function(){
-            window.location.href = 'business_info.html';
-        });
-    });
-        window.onload = () => {
-      const businessCode = document.getElementById("insert_email"); // 이메일 입력 필드
-      const phoneInput = document.getElementById("insert_phone_number"); // 휴대폰 번호 입력 필드
-      const verificationInput = document.querySelector("#insert_confirm1"); // 인증번호 입력 필드
-      const verificationInput1 = document.querySelector("#insert_confirm2"); // 인증번호 입력 필드
-      const verificationCheckbox = document.querySelector("#phonecheck"); // 휴대전화로 인증 체크박스
-      const verificationCheckbox1 = document.querySelector("#emailcheck"); // 이메일로 인증 체크박스
-      const searchButton = document.querySelector(".btn_confirm2"); // 인증번호 전송 버튼
-      const confirmButton = document.querySelector(".btn_confirm3"); // 인증번호 작성 후 확인버튼
-      const insertName1 = document.querySelector("#insert_name1");// 이름 입력
-      const insertName2 = document.querySelector("#insert_name2"); // 이름 입력
-      let serverVerificationCode = "123456";
+			var phoneCheckbox = document.querySelector("#phonecheck");
+			var emailCheckbox = document.querySelector("#emailcheck");
+			if (!isIdVerified) {
+				alert("고객업체 코드 중복검사를 해주세요.");
+			} else {
 
-      searchButton.addEventListener('click', (e) => {
+				if (!emailCheckbox.checked && !phoneCheckbox.checked) {
+					e.preventDefault();
+					alert("본인확인 방법을 선택해야 합니다.");
+				} else {
+					if (emailCheckbox.checked) {
+						if (emailInput.value.trim() === "") {
+							alert("이메일 주소를 입력해주세요.");
+						} else {
+							if (insertName2.value.trim() === "") {
+								alert("이름을 입력해주세요.");
+							} else {
+								sendEmailVerification();
+							}
+						}
+					} else if (phoneCheckbox.checked) {
+						if (phoneInput.value.trim() === "") {
+							alert("휴대폰 번호를 입력해주세요.");
+						} else {
+							if (insertName1.value.trim() === "") {
+								alert("이름을 입력해주세요.");
+							} else {
+								sendSMSVerification();
+							}
+						}
+					}
+				}
+			}
 
-         var phoneCheckbox = document.querySelector("#phonecheck");
-         var emailCheckbox = document.querySelector("#emailcheck");
-         if (!isIdVerified) {
-            alert("고객업체 코드 중복검사를 해주세요.");
-         } else {
-
-            if (!emailCheckbox.checked && !phoneCheckbox.checked) {
-               e.preventDefault();
-               alert("본인확인 방법을 선택해야 합니다.");
-            } else {
-               if (emailCheckbox.checked) {
-                  if (emailInput.value.trim() === "") {
-                     alert("이메일 주소를 입력해주세요.");
-                  } else {
-                     if (insertName2.value.trim() === "") {
-                        alert("이름을 입력해주세요.");
-                     } else {
-                        sendEmailVerification();
-                     }
-                  }
-               } else if (phoneCheckbox.checked) {
-                  if (phoneInput.value.trim() === "") {
-                     alert("휴대폰 번호를 입력해주세요.");
-                  } else {
-                     if (insertName1.value.trim() === "") {
-                        alert("이름을 입력해주세요.");
-                     } else {
-                        sendSMSVerification();
-                     }
-                  }
-               }
-            }
-         }
-        
-      });
-    }
+		});
+	}
 </script>
+
 <body>
-    <div class="All">
-        <div class="header">
-            <a href="/mainpage">
-            	<img src="/img/home.png" alt="" class="source" id="home">
-            </a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">수주관리</a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">고객업체 정보</a>
-        </div>
-        <h1>고객업체 정보 등록</h1>
-       <table class="modi_form">
-        <tr>
-            <td class="thead">고객업체 코드<span class="red">*</span></td>
-            <td class="check">
-                <input type="text" class="inputtext" id="business_code">
-                <button type="button" id="btn_check">중복검사</button>
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">고객업체명<span class="red">*</span></td>
-            <td><input type="text" class="inputtext" id="business_name"></td>
-        </tr>
-        <tr>
-            <td class="thead">대표자명</td>
-            <td><input type="text" class="inputtext" id="leader"></td>
-        </tr>
-        <tr>
-            <td class="thead">사업자 등록번호</td>
-            <td><input type="text" class="inputtext" id="business_registration_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">전화번호</td>
-            <td class="div_tel"><input type="text" class="tel" id="tel_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">핸드폰번호</td>
-            <td class="div_tel"><input type="text" class="tel" id="phone_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">FAX</td>
-            <td class="div_tel"><input type="text" class="tel" id="FAX_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">이메일</td>
-            <td><input type="text" class="inputtext" id="email1"> @
-                <input type="text" class="inputtext" id="email2">
-                <select name="" id="email_domain">
-                    <option value="">직접입력</option>
-                    <option value="naver.com">naver.com</option>
-                    <option value="daum.net">daum.net</option>
-                    <option value="gmail.com">gmail.com</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">주소</td>
-            <td>
-                <div class="address_div">
-                    <input type="text" placeholder="우편번호" class="address">
-                    <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                </div>
-                <input type="text" class="address_input" id="business_address1" placeholder="도로명 주소를 입력하세요.">
-                <br>
-                <input type="text" class="address_input" id="business_address2" placeholder="상세 주소를 입력하세요.">
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">납품처 주소</td>
-            <td>
-                <div class="address_div">
-                    <input type="text" placeholder="우편번호" class="address">
-                    <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                </div>
-                <input type="text" class="address_input" id="vendor_address1" placeholder="도로명 주소를 입력하세요.">
-                <br>
-                <input type="text" class="address_input" id="vendor_address2" placeholder="상세 주소를 입력하세요.">
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">담당자명</td>
-            <td class="div_tel"><input type="text" class="inputtext" id="contact_person"></td>
-        </tr>
-        <tr>
-            <td class="thead">담당자 전화번호</td>
-            <td class="div_tel"><input type="text" class="tel" id="contact_phone_num"></td>
-        </tr>
-        <tr>
-            <td class="thead">담당자 이메일</td>
-                <td><input type="text" class="inputtext" id="contact_email1"> @
-                    <input type="text" class="inputtext" id="contact_email2">
-                    <select name="" id="contact_email_domain">
-                        <option value="">직접입력</option>
-                        <option value="naver.com">naver.com</option>
-                        <option value="daum.net">daum.net</option>
-                        <option value="gmail.com">gmail.com</option>
-                    </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="thead">결제조건</td>
-            <td><input type="text" class="inputtext_payment" id="terms_of_payment"></td>
-        </tr>
-        <tr>
-            <td class="thead">기타</td>
-            <td><input type="text" class="inputtext_etc" id="etc"></td>
-        </tr>
-       </table>
-    <div class="btn_area">
-        <button value="button" class="btn_cancel">취소</button>
-        <button value="button" class="btn_upload">등록</button>
-    </div>
-    </div>
-    <div id="popup" style="display: none;">
-        <p id="tap">정보가 등록이 완료되었습니다. <br>로그인페이지로 이동하시겠습니까?</p>
-        <div id="btnYesNo">
-            <button id="btnYes">예</button>
-            <button id="btnNo">메인페이지로 이동</button>
-        </div>
-    </form>
+	<th:block th:insert="header/header.html"></th:block>
+	<div class="All">
+		<div class="obtainheader">
+			<a href="/mainpage">
+				<img src="/img/home.png" alt="" class="source" id="home">
+			</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/BusinessInfo" class="source" id="headText">수주관리</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/BusinessInfo" class="source" id="headText">고객업체 정보</a>
+		</div>
+		<h2>고객업체 정보 등록</h2>
+		<form method="post" action="/business/upload">
+			<table class="modi_form">
+				<tr>
+					<td class="thead">고객업체명<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="business_name" name="sName"></td>
+				</tr>
+				<tr>
+					<td class="thead">대표자명<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="leader" name="cLeader"></td>
+				</tr>
+				<tr>
+					<td class="thead">사업자 등록번호<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="business_registration_num" name="cNum"></td>
+				</tr>
+				<tr>
+					<td class="thead">전화번호</td>
+					<td class="div_tel"><input type="text" class="tel" id="tel_num" name="cTel"></td>
+				</tr>
+				<tr>
+					<td class="thead">핸드폰번호</td>
+					<td class="div_tel"><input type="text" class="tel" id="phone_num" name="cPhone"></td>
+				</tr>
+				<tr>
+					<td class="thead">FAX</td>
+					<td class="div_tel"><input type="text" class="tel" id="FAX_num" name="cFax"></td>
+				</tr>
+				<tr>
+					<td class="thead">이메일</td>
+					<td>
+						<input type="text" class="tel" id="email" name="cMail">
+					</td>
+				</tr>
+				<tr>
+					<td class="thead">주소</td>
+					<td>
+						<input type="text" class="address_input" id="business_address" placeholder="주소를 입력하세요."
+							name="address">
+					</td>
+				</tr>
+			</table>
+			<div class="btn_area">
+				<button type="button" class="btn_cancel">취소</button>
+				<button type="submit" class="btn_upload">등록</button>
+			</div>
+		</form>
+	</div>
 </body>
+
 </html>

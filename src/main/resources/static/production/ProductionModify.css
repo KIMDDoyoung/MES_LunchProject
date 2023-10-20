@@ -1,7 +1,8 @@
 @charset "UTF-8";
-.container{
-	position: absolute;
-	top:380px;
+.pmContainer{
+	margin:0 auto;
+	width: 1280px;
+	
 }
 a{
 	text-decoration: none;
@@ -29,32 +30,32 @@ th{
 	text-align: left;
 }
 
-.Product_register td{
+.Production_modify td{
 	width: 100px;
 	height: 50px;
 	border: 1px solid black;
 	text-align: center;
 }
-.Product_register td:nth-child(odd){
+.Production_modify td:nth-child(odd){
 	background-color: rgb(192, 192, 192); 
 }
-.Product_register input{
+.Production_modify input{
 	width: 200px;
 	height: 20px;
 	border-radius: 5px;
 }
-.Product_register td[colspan="3"]{
+.Production_modify td[colspan="3"]{
 	padding-left: 65px;
 	text-align: left;
 }
-.Product_register{
+.Production_modify{
 	width: 1000px;
 	margin: 0 auto;
 	margin-top: 50px;
 	border-collapse: collapse;
 }
 
-input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+input[type="date"]::-webkit-calendar-picker-indicator{
 	cursor: pointer;
 	transform: scale(1.5);
 }
@@ -67,6 +68,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{
 	border-radius: 5px;
 	border: none;
 	cursor: pointer;
+
 }
 .button-container{
 	margin-top: 20px;

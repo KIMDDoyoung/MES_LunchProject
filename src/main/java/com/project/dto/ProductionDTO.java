@@ -1,30 +1,28 @@
 package com.project.dto;
 
-import java.util.Date;
-
 import org.apache.ibatis.type.Alias;
 @Alias("production")
 public class ProductionDTO {
 	private String pNum;
-	private int orderNum;
+	private String productionNum;
 	private String productName;
 	private String cNum;
-	private Date dateRegister;
-	private Date dateFinish;
+	private String dateRegister;
+	private String dateFinish;
 	private	int amount;
 	private	int price;
 	private String boxCount;
 	private String phase;
+	private String recipe_num;
 	
 	public ProductionDTO() {
-
 	}
 
-	public ProductionDTO(String pNum, int orderNum, String productName, String cNum, Date dateRegister, Date dateFinish,
-			int amount, int price, String boxCount, String phase) {
+	public ProductionDTO(String pNum, String productionNum, String productName, String cNum, String dateRegister,
+			String dateFinish, int amount, int price, String boxCount, String phase, String recipe_num) {
 		super();
 		this.pNum = pNum;
-		this.orderNum = orderNum;
+		this.productionNum = productionNum;
 		this.productName = productName;
 		this.cNum = cNum;
 		this.dateRegister = dateRegister;
@@ -33,6 +31,7 @@ public class ProductionDTO {
 		this.price = price;
 		this.boxCount = boxCount;
 		this.phase = phase;
+		this.recipe_num = recipe_num;
 	}
 
 	public String getpNum() {
@@ -43,12 +42,12 @@ public class ProductionDTO {
 		this.pNum = pNum;
 	}
 
-	public int getOrderNum() {
-		return orderNum;
+	public String getProductionNum() {
+		return productionNum;
 	}
 
-	public void setOrderNum(int orderNum) {
-		this.orderNum = orderNum;
+	public void setProductionNum(String productionNum) {
+		this.productionNum = productionNum;
 	}
 
 	public String getProductName() {
@@ -67,19 +66,19 @@ public class ProductionDTO {
 		this.cNum = cNum;
 	}
 
-	public Date getDateRegister() {
+	public String getDateRegister() {
 		return dateRegister;
 	}
 
-	public void setDateRegister(Date dateRegister) {
+	public void setDateRegister(String dateRegister) {
 		this.dateRegister = dateRegister;
 	}
 
-	public Date getDateFinish() {
+	public String getDateFinish() {
 		return dateFinish;
 	}
 
-	public void setDateFinish(Date dateFinish) {
+	public void setDateFinish(String dateFinish) {
 		this.dateFinish = dateFinish;
 	}
 
@@ -115,17 +114,22 @@ public class ProductionDTO {
 		this.phase = phase;
 	}
 
-	@Override
-	public String toString() {
-		return "ProductionDTO [pNum=" + pNum + ", orderNum=" + orderNum + ", productName=" + productName + ", cNum="
-				+ cNum + ", dateRegister=" + dateRegister + ", dateFinish=" + dateFinish + ", amount=" + amount
-				+ ", price=" + price + ", boxCount=" + boxCount + ", phase=" + phase + "]";
+	public String getRecipe_num() {
+		return recipe_num;
 	}
 
-	
-	
-	
-	
-	
+	public void setRecipe_num(String recipe_num) {
+		this.recipe_num = recipe_num;
+	}
+
+	@Override
+	public String toString() {
+		return "ProductionDTO [pNum=" + pNum + ", productionNum=" + productionNum + ", productName=" + productName
+				+ ", cNum=" + cNum + ", dateRegister=" + dateRegister + ", dateFinish=" + dateFinish + ", amount="
+				+ amount + ", price=" + price + ", boxCount=" + boxCount + ", phase=" + phase + ", recipe_num="
+				+ recipe_num + "]";
+	}
+
+
+		
 }
-	

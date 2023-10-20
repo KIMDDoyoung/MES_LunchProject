@@ -104,3 +104,47 @@
     padding: 4px 12px;
     box-shadow: 0px 1px 2px gray;
 }
+
+/*driverlist popup css*/
+.close {
+	color: #888;
+	float: right;
+	font-size: 24px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.driverpopBg1 {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* 배경 어둡게 처리 */
+}
+
+.conpopcon {
+	background-color: #fff;
+	width: 80%;
+	max-width: 1100px;
+	margin: 50px auto;
+	padding: 20px;
+	border-radius: 5px;
+}
+
+#constractor_list {
+	border: 1px solid #242424;
+	border-collapse: collapse;
+}
+
+#constractor_list>thead>tr>th {
+	border: 1px solid #242424;
+	background-color: #fce6e6;
+}
+
+#constractor_list>tbody>tr>td {
+	border: 1px solid #242424;
+	text-align: center;
+}

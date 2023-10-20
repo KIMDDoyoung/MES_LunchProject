@@ -15,57 +15,206 @@
 		<result column="date_to_arrive" property="dateToArrive" />
 		<result column="s_barcode" property="barcode" />
 		<result column="s_name" property="sName" />
+
 		<result column="address" property="address" />
-		<result column="c_code" property="cCode" />
 		<result column="c_leader" property="cLeader" />
 		<result column="c_tel" property="cTel" />
 		<result column="c_phone" property="cPhone" />
 		<result column="c_fax" property="cFax" />
 		<result column="c_mail" property="cMail" />
+
 		<result column="p_Amount" property="pAmount" />
-		
 		<result column="p_name" property="pName" />
-		<result column="p_img" property="pImg" />
+		<result column="p_price" property="pPrice" />
 		<result column="p_size" property="pSize" />
 		<result column="boxcount" property="boxCount" />
 		<result column="weight" property="pWeight" />
 		<result column="weight_1" property="pWeight_1" />
 		<result column="unit" property="unit" />
 		<result column="date_finish" property="pFinish" />
+		<result column="recipe_num" property="recipeNum" />
+
+		<result column="m_name" property="mName" />
+		<result column="m_contact" property="mContact" />
+		<result column="m_mail" property="mMail" />
+
 	</resultMap>
 
-	<!-- //로그인 -->
+	<!-- 수주 -->
 	<select id="obtainAllList" resultMap="sell">
-		select * from SELL, COMPANY_SELL, PRODUCT
-	</select>
-	<select id="BusinessAllList" resultMap="sell">
-		select * from COMPANY_SELL
-	</select>
-	<select id="ProductionAllList" resultMap="sell">
-		select * from PRODUCT p, SELL s where p.p_num = s.p_num
-	</select>
-	<select id="SearchProduction" parameterType="Map" resultMap="sell">
-		select * from PRODUCT p, SELL s 
-		where p.p_num = s.p_num and ${kind} like '%' || #{search}|| '%'
-	</select>
-	<select id="countAllOrderProduct" parameterType="Map" resultType="int">
-		select count(*) from PRODUCT p, SELL s 
+		select * from SELL s,
+		PRODUCT p
 		where p.p_num = s.p_num
 	</select>
-	<select id="countAllOrderProduct1" parameterType="Map" resultType="int">
-		select count(*) from PRODUCT p, SELL s 
-		where p.p_num = s.p_num and s_phase = 4
+	<select id="SearchObtainByDate" parameterType="Map"
+		resultMap="sell">
+		select s.s_num, s.c_num, p.p_name, s.date_order,
+		s.date_start_ship, s.date_to_arrive, s.s_phase, s.s_amount
+		from SELL s
+		, PRODUCT p
+		where p.p_num = s.p_num(+)
+		and s.date_start_ship between
+		#{startDate} and #{endDate}
+		and
+		s.date_to_arrive between #{startDate1}
+		and #{endDate1}
+		and ${kind} like '%' || #{search} || '%'
 	</select>
-	<select id="countAllOrderProduct2" parameterType="Map" resultType="int">
-		select count(*) from PRODUCT p, SELL s 
-		where p.p_num = s.p_num and s_phase in(0,1,2,3)
+	<select id="SearchObtain" parameterType="Map" resultMap="sell">
+		SELECT
+		s.s_num, s.c_num, p.p_name, s.date_order, s.date_start_ship,
+		s.date_to_arrive, s.s_phase, s.s_amount
+		from PRODUCT p, SELL s
+		where
+		p.p_num = s.p_num
+		and ${kind} like '%' || #{search} || '%'
 	</select>
-	<delete id="DeleteProduction" parameterType="String">
-		delete from sell where p_num like #{value}
+	<select id="countAllObtainOrder" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p, SELL s
+		where p.p_num =
+		s.p_num
+	</select>
+	<select id="countAllObtainOrder1" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p, SELL s
+		where p.p_num =
+		s.p_num and s_phase = 0
+	</select>
+	<select id="countAllObtainOrder2" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p, SELL s
+		where p.p_num =
+		s.p_num and s_phase = 1
+	</select>
+	<select id="countAllObtainOrder3" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p, SELL s
+		where p.p_num =
+		s.p_num and s_phase = 2
+	</select>
+	<select id="countAllObtainOrder4" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p, SELL s
+		where p.p_num =
+		s.p_num and s_phase = 3
+	</select>
+	<select id="countAllObtainOrder5" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p, SELL s
+		where p.p_num =
+		s.p_num and s_phase = 4
+	</select>
+	<!-- 수주등록*수정 컴퍼니리스트 -->
+	<select id="SearchCompanyList" parameterType="string"
+		resultMap="sell">
+		SELECT * from COMPANY_SELL where c_num like '%' || #{cNum}
+		|| '%'
+	</select>
+	<!-- 수주등록*수정 매니저리스트 -->
+	<select id="SearchManagerList" parameterType="string"
+		resultMap="sell">
+		select * from MANAGER where m_name like '%' || #{mName} ||
+		'%'
+	</select>
+	<!-- 수주등록*수정 제품리스트 -->
+	<select id="SearchProductList" parameterType="string"
+		resultMap="sell">
+		select * from PRODUCT where p_num like '%' || #{pNum} || '%'
+	</select>
+	<insert id="InsertObtain" parameterType="sell">
+		insert into SELL (s_num,
+		s_phase, s_amount, c_num, price, p_num, date_order, date_start_ship,
+		date_to_arrive)
+		values(#{sNum}, #{sPhase}, #{sAmount}, #{cNum},
+		#{price}, #{pNum}, #{dateOrder}, #{dateStartShip}, #{dateToArrive})
+	</insert>
+
+	<!-- 제품 -->
+	<select id="ProductionAllList" resultMap="sell">
+		select * from PRODUCT p
+	</select>
+	<select id="SearchProduction" parameterType="Map"
+		resultMap="sell">
+		select * from PRODUCT p
+		where ${kind} like '%' || #{search}||
+		'%'
+	</select>
+	<select id="countAllOrderProduct" parameterType="Map"
+		resultType="int">
+		select count(*) from PRODUCT p
+	</select>
+	<delete id="DeleteProduction" parameterType="list">
+		delete from product where p_num in
+		<foreach collection="list" item="obj" open="(" close=")"
+			separator=",">#{obj}</foreach>
 	</delete>
-<!-- 	<select id="ModiWriteProduction" parameterType="String" resultMap="sell">
-  		select * from PRODUCT p, SELL s 
-  		where p.p_num = s.p_num and p_num like #{pNum}
-  	</select> -->
+	<select id="checkpNum" parameterType="String"
+		resultType="String">
+		select p_num from PRODUCT where p_num = #{pNum}
+	</select>
+	<insert id="InsertProduction" parameterType="sell">
+		insert into PRODUCT
+		(P_NUM, P_NAME, UNIT, P_SIZE, P_AMOUNT, boxcount, WEIGHT, WEIGHT_1,
+		P_PRICE, DATE_FINISH, RECIPE_NUM)
+		values(#{pNum}, #{pName}, #{unit},
+		#{pSize}, #{pAmount}, #{boxCount}, #{pWeight},
+		#{pWeight_1}, #{pPrice},
+		#{pFinish}, #{recipeNum})
+	</insert>
+
+	<select id="ModiWriteProduction" parameterType="String"
+		resultMap="sell">
+		select * from PRODUCT p where p_num like #{pNum}
+	</select>
+	<update id="UpdateProduction" parameterType="sell">
+		update PRODUCT set
+		p_name = #{pName}, unit = #{unit}, p_size = #{pSize},
+		p_amount =
+		#{pAmount}, boxcount = #{boxCount},
+		weight = #{pWeight}, weight_1 =
+		#{pWeight_1}, p_price = #{pPrice},
+		date_finish = #{pFinish},
+		recipe_num
+		= #{recipeNum}
+		where p_num like #{pNum}
+	</update>
+
+	<!-- 고객 -->
+	<select id="BusinessAllList" resultMap="sell">
+		select * from
+		COMPANY_SELL
+	</select>
+	<select id="countAllOrderCompany" parameterType="Map"
+		resultType="int">
+		select count(*) from COMPANY_SELL
+	</select>
+	<select id="SearchBusiness" parameterType="Map" resultMap="sell">
+		select * from COMPANY_SELL
+		where ${kind} like '%' || #{search} || '%'
+	</select>
+	<insert id="InsertBusiness" parameterType="sell">
+		insert into
+		COMPANY_SELL (s_name, c_leader, c_num, c_tel, c_phone, c_fax, c_mail,
+		address)
+		values (#{sName}, #{cLeader}, #{cNum}, #{cTel}, #{cPhone},
+		#{cFax}, #{cMail}, #{address})
+	</insert>
+	<select id="ModiWriteBusiness" parameterType="String"
+		resultMap="sell">
+		select * from COMPANY_SELL where c_num like #{cNum}
+	</select>
+	<update id="UpdateBusiness" parameterType="sell">
+		update COMPANY_SELL
+		set s_name = #{sName}, c_leader = #{cLeader}, c_tel = #{cTel}, c_phone
+		= #{cPhone},
+		c_fax = #{cFax}, c_mail = #{cMail}, address = #{address}
+		where c_num like #{cNum}
+	</update>
+	<delete id="DeleteBusiness" parameterType="list">
+		delete from COMPANY_SELL where c_num in
+		<foreach collection="list" item="obj" open="(" close=")"
+			separator=",">#{obj}</foreach>
+	</delete>
 
 </mapper>

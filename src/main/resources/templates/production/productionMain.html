@@ -3,25 +3,199 @@
 <head>
 <meta charset="EUC-KR">
 <title>Insert title here</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/production/ProductionMain.css" />
-<link rel="stylesheet" href="/production/global.css" />
-<th:block th:insert="/header/header.html"></th:block>
+<link rel="stylesheet" media="all" href="/production/ProductionMain.css" />
+<link rel="stylesheet" media="all" href="/production/global.css" />
+<th:block th:insert="header/header.html"></th:block>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/JsBarcode.code128.min.js"></script>
+<script src="js/bxlcommon.js"></script>
+<script src="js/bxllabel.js"></script>
 
  
 </head>
 <body>
 	<script>
-		// 체크박스 선택해제
-		function checkAll() {
+		// 체크박스 전체선택/해제
+		function checkAll() { 
 			if($("#selectAll").is(':checked')) {
 				$("input[name=select]").prop("checked", true);
 			} else {
 				$("input[name=select]").prop("checked", false);
 			}
 		}
-		$(document).on("click", "input:checkbox[name=select]", function(e) {
+		 // 상태(phase)에 따른 버튼(case) 가져오기
+		function getButtonText(phase) {
+			
+		        switch (Number(phase)) {
+	            case 1:
+	            	return "<button type='button'id='btn_standBy'>생산대기</button>";
+	            case 2:
+	            	return "<button type='button'id='btn_ing'>생산중</button>";
+	            case 3:
+	            	return "<button type='button'id='btn_success'>생산완료</button>";
+	            default:
+	            	return "";
+        	}
+        }
+	        //바코드 생성 함수
+		function printAllBarcode() {
+			//consignment_data class의 tr 지정
+			let row = $(".search_con tr");
+	
+			$(row).each(function (idx, obj) {
+				//tr의 자녀 속성인 td중 1번째인 출하코드 선택
+				console.log($(obj).children("td").eq(1).text());
+				let barcodeValue = $(obj).children("td").eq(1).text();
+				//td중 마지막 속성의 자녀 속성인 svg에 0번째 선택
+				JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {
+					//바코드 크기
+					format: "CODE128", width: 1,
+					height: 20
+				});
+			});
+		}
+		//바코드 출력 함수
+		var issueID = 1;
+		var printer_name = 'Printer1';
+	
+		function viewResult(result) {
+			console.log(result);
+		}
+	
+		function PrintBarcode(row) {
+			console.log(row);
+			//return;
+			var barCodeSymbol = 1;
+			var barCodeHeight = 100;
+			var barWidth = 4;
+			var nBarWidth = parseInt(barWidth / 2);
+			var barCodeHri = 1;
+	
+			setLabelId(issueID);
+	
+			checkLabelStatus();
+			clearBuffer();
+	
+			setWidth(576);
+	
+			drawDeviceFont("생산 정보", 30, 10, 'b', 1, 1, 0, 0, 1, 0);
+			drawBlock(30, 40, 530, 45, 'B', 5);
+			drawDeviceFont(`품목 번호 : ${$(row).eq(1).text()}`, 30, 50, 'd', 1, 1, 0, 0, 0, 0);
+			drawDeviceFont(`제품 명 : ${$(row).eq(3).text()}`, 30, 90, 'd', 1, 1, 0, 0, 0, 0);
+			drawDeviceFont(`생산 시작 : ${$(row).eq(5).text()}`, 30, 130, 'd', 1, 1, 0, 0, 0, 0);
+			drawDeviceFont(`생산 종료: ${$(row).eq(6).text()}`, 30, 170, 'd', 1, 1, 0, 0, 0, 0);
+			drawDeviceFont(`생산 수량 : ${$(row).eq(7).text()}`, 30, 210, 'd', 1, 1, 0, 0, 0, 0);
+			drawDeviceFont(`가격 : ${$(row).eq(8).text()}`, 30, 250, 'd', 1, 1, 0, 0, 0, 0);
+			drawDeviceFont(`BOX생산수량 : ${$(row).eq(9).text()}`, 30, 290, 'd', 1, 1, 0, 0, 0, 0);
+			//x,y,x,y 좌하단 우하단,글꼴,두께
+			drawBlock(30, 320, 530, 325, 'B', 5);
+			draw1DBarcode($(row).eq(1).text(), 70, 350, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+			printBuffer();
+	
+			var strSubmit = getLabelData();
+	
+			console.log(strSubmit);
+	
+			issueID++;
+			console.log(strSubmit, viewResult);
+			requestPrint(printer_name, strSubmit, viewResult);
+	
+		}
+	
+	
+		$(function () {
+			//바코드 찍으면 자동으로 엔터값 입력
+			$(".search_td").keyup(function (e) {
+				console.log(e.keyCode)
+				if (e.keyCode == 13)
+				$('.search_btn').click();
+			});
+					
+			//바코드 클릭했을 때 바코드 출력시키는 기능
+			$("svg").click(function () {
+				let row = $(this).parent().parent().children("td");
+				PrintBarcode(row);
+			});
+		});
+		 // 조회/검색 갯수를 표시하는 함수
+		function displayResultCount() {		
+        	let data = `search=${$(".search_text").val()}`;
+        	
+        $.ajax({
+            url: "/pm/search.do",
+            data: data,
+            dataType: "json",
+            type: "post",
+            success: function(result) {
+                var pContent = "";
+                var standbyCount = 0; // 생산대기 갯수 초기화
+                var inProgressCount = 0; // 생산중 갯수 초기화
+                var successCount = 0; // 생산완료 갯수 초기화
+                
+                 if (result.length === 0) {
+                    pContent = "<tr><td colspan='12'>일치하는 정보가 없습니다.</td></tr>";
+                    $('.search_con').html(pContent);
+                } else {
+	                for (var i = 0; i < result.length; i++) {
+	                    pContent += `<tr class="content_tr">`;
+	                    pContent += `<td><input type="checkbox" name="select" id="select"></td>`;
+	                    pContent += `<td>${result[i].pNum}</td>`;
+	                    pContent += `<td>${result[i].productionNum}</td>`;
+	                    pContent += `<td onclick="location.href='/PMModify'">${result[i].productName}</td>`;
+	                    pContent += `<td>${result[i].cNum}</td>`;
+	                   	pContent += `<td>${result[i].dateRegister}</td>`;
+	                    pContent += `<td>${result[i].dateFinish}</td>`;
+	                    pContent += `<td>${result[i].amount}</td>`;
+	                    pContent += `<td>${result[i].price}</td>`;
+	                    pContent += `<td>${result[i].boxCount}</td>`;
+						pContent += `<td><button type="button">${getButtonText(result[i].phase)}</button></td>`;  
+						pContent += `<td><svg></svg></td>`;                                     	                 									
+	                    pContent += `</tr>`;
+	                    
+	                    // 상태(phase)에 따라 갯수 카운트
+                        switch (Number(result[i].phase)) {
+                            case 1:
+                                standbyCount++;
+                                break;
+                            case 2:
+                                inProgressCount++;
+                                break;
+                            case 3:
+                                successCount++;
+                                break;
+                            default:
+                                break;
+                        }
+                    }	                    	      
+	            		  	
+                var resultCount = result.length; // 전체 갯수 업데이트  		 		                
+                console.log(resultCount);
+                // 결과를 특정 요소에 표시
+                $(".result_count").text(resultCount + "개의 데이터가 조회되었습니다.");
+                               
+                // 전체, 생산대기, 생산중, 생산완료 갯수를 각각 업데이트
+                $(".condition td:nth-child(1) span").text(resultCount);
+                $(".condition td:nth-child(2) span").text(standbyCount);
+                $(".condition td:nth-child(3) span").text(inProgressCount);
+                $(".condition td:nth-child(4) span").text(successCount);
+                
+                // 검색 결과를 표시할 요소를 찾아 업데이트
+                $(".search_con").html(pContent);
+                printAllBarcode();
+                $("svg").click(function () {
+							let row = $(this).parent().parent().children("td");
+							PrintBarcode(row);
+						});
+                
+               		}
+           	 	}		
+          	});       	
+    	}	
+		// load start
+  		// 체크박스 선택/해제
+		$(document).ready(function() {
+			$(document).on("click", "input:checkbox[name=select]", function(e) {
 			
 			var chks = document.getElementsByName("select");
 			var chksChecked = 0;
@@ -41,67 +215,234 @@
 			}
 			
 		});
-		// 체크박스 선택 삭제
-		$('.delete_btn').click(function(){
-			var selectedCheckboxes = $("input:checkbox[name='select']:checked");
-			if (selectedCheckboxes.length == 0) {
-				alert("삭제할 항목을 선택해 주세요.");
-				return;
-			}
-		selectedCheckboxes.each(function(k,kVal){
-			console.log("kVal ::", kVal.parentElement.parentElement.parentElement);
-			let a = kVal.parentElement.parentElement.parentElement;
-			$(a).remove();
+			$(document).on("click", ".delete_btn", function() {
+			  var selectedCheckboxes = $("input:checkbox[name='select']:checked");
+			  if (selectedCheckboxes.length === 0) {
+			    alert("삭제할 항목을 선택해 주세요.");
+			  } else {
+			    if (confirm('선택한 항목을 삭제하시겠습니까?')) {
+			      var selectedRows = [];
+			      
+			      selectedCheckboxes.each(function() {
+			        var value = $(this).closest('tr').find('td:eq(1)').text(); // 체크된 체크박스가 속한 행의 두 번째 열의 값을 가져옴 (pNum)
+			        selectedRows.push(value); // 체크된 체크박스의 값을 배열에 추가
+			        console.log(value);
+			      });
+			
+			      // AJAX 요청을 사용하여 서버에서 선택된 항목 삭제
+			      $.ajax({
+			        url: '/pm/delete',
+			        type: 'POST',
+			        contentType: 'application/json', // JSON 데이터를 전송하기 위해 content type 설정			        
+			        data: JSON.stringify(selectedRows), // 선택된 항목을 JSON 형식으로 서버로 전송
+			        success: function(response) {
+			          if (response.message === '데이터 삭제 성공') {
+			            // 삭제가 성공한 경우, 화면에서 선택된 행 삭제
+			            selectedCheckboxes.closest('tr').remove();
+			          } else {
+			            alert('데이터 삭제 실패');
+			          }
+			        },
+			        error: function(error) {
+			          alert('삭제 중 오류가 발생했습니다.');
+			        }
+			      });//ajax
+			    }
+			  }
 			});
-		});
-		
-		//검색 
-		$(function(){
-			$(".search_btn").click(function(){
-				let data = `search=${$(".search_text").val()}`;
-				  $.ajax({
-            url: '/Search',
-            data: data,
-            type: 'post',
-            dataType: 'json',
-            success: function (r) {
-                console.log(r);
-                var pContent = "";
-
-                if (r.length === 0) {
-                    tag = "<tr><td colspan='11'>일치하는 정보가 없습니다.</td></tr>";
-                    $('.search_con').html(pContent);
+			
+			
+    
+		    // 검색 버튼 클릭 시도 조회 갯수 표시 함수 호출
+		    $(".search_btn").click(function() {
+		        displayResultCount();
+		        console.log(displayResultCount());
+		        
+		    });
+		    
+		    displayResultCount();
+   
+   	
+    	// 날짜 입력 필드에서 날짜를 선택할 때 이벤트를 처리
+        $(".date1, .date2").on("change", function () {
+			
+            // 선택된 날짜 가져오기
+			let startDate = $(".date1").val();
+	  		let endDate = $(".date2").val();
+    		console.log(startDate);   
+    		console.log(endDate);
+    		var standbyCount = 0; // 생산대기 갯수 초기화
+            var inProgressCount = 0; // 생산중 갯수 초기화
+           	var successCount = 0; // 생산완료 갯수 초기화   
+    			
+			if (startDate && endDate) {
+			    let data = {
+			        startDate: startDate,
+			        endDate: endDate
+			    };       
+            // AJAX 요청 보내기
+            $.ajax({
+                type: "POST",
+                url: "/date/search.do", // AJAX 요청을 처리할 서버 스크립트의 경로
+                data: data,
+                dataType: 'json',
+                success: function (data) {   
+				const datetimes = data;  
+				console.log(datetimes);
+				var dContent = "";
+				
+                if (datetimes.length === 0) {
+                    dContent = "<tr><td colspan='12'>일치하는 정보가 없습니다.</td></tr>";
+                    $('.search_con').html(dContent);
                 } else {
-                    for (let i = 0; i < r.length; i++) {
-                        pContent += `<tr>`;
-                        pContent += `<td><input type="checkbox" name="select" id="select"></td>`;
-                        pContent += `<td>${r[i].pNum}</td>`;
-                        pContent += `<td>${r[i].orderNum}</td>`;
-                        pContent += `<td>${r[i].productName}</td>`;
-                        pContent += `<td>${r[i].cNum}</td>`;
-                        pContent += `<td>${r[i].dateRegister}</td>`;
-                        pContent += `<td>${r[i].dateFinish}</td>`;
-                        pContent += `<td>${r[i].amount}</td>`;
-                        pContent += `<td>${r[i].price}</td>`;
-                        pContent += `<td>${r[i].boxCount}</td>`;
-                        pContent += `<td>${r[i].phase}</td>`;
-                        pContent += `</tr>`;
+                    for (let i = 0; i < datetimes.length; i++) {
+                        dContent += `<tr class="content_tr">`;
+                        dContent += `<td><input type="checkbox" name="select" id="select"></td>`;
+                        dContent += `<td>${datetimes[i].pNum}</td>`;
+                        dContent += `<td>${datetimes[i].productionNum}</td>`;
+                        dContent += `<td onclick="location.href='/PMModify'">${datetimes[i].productName}</td>`;
+                        dContent += `<td>${datetimes[i].cNum}</td>`;
+                        dContent += `<td>${datetimes[i].dateRegister}</td>`;
+                        dContent += `<td>${datetimes[i].dateFinish}</td>`;
+                        dContent += `<td>${datetimes[i].amount}</td>`;
+                        dContent += `<td>${datetimes[i].price}</td>`;
+                        dContent += `<td>${datetimes[i].boxCount}</td>`;
+                        dContent += `<td><button type="button">${getButtonText(datetimes[i].phase)}</button></td>`;   
+                        dContent += `<td><svg></svg></td>`;
+                        dContent += `</tr>`;
+                        
+                         // 상태(phase)에 따라 갯수 카운트
+                        switch (Number(datetimes[i].phase)) {
+                            case 1:
+                                standbyCount++;
+                                break;
+                            case 2:
+                                inProgressCount++;
+                                break;
+                            case 3:
+                                successCount++;
+                                break;
+                            default:
+                                break;
+                        }
                     }
-		                var resultCount = r.length;
+                    var resultCount = datetimes.length;
 		
-		                // 결과를 특정 요소에 표시
-		                $(".result_count").text(resultCount + "개의 데이터가 조회되었습니다.");
-		                    
-		                    $('.search_con').html(pContent);
-                }
+		            // 결과를 특정 요소에 표시
+		            $(".result_count").text(resultCount + "개의 데이터가 조회되었습니다.");
+		            // 전체, 생산대기, 생산중, 생산완료 갯수를 각각 업데이트
+	                $(".condition td:nth-child(1) span").text(resultCount);
+	                $(".condition td:nth-child(2) span").text(standbyCount);
+	                $(".condition td:nth-child(3) span").text(inProgressCount);
+	                $(".condition td:nth-child(4) span").text(successCount);
+                				
+                    // 검색 결과를 표시할 요소를 찾아 업데이트
+                    $(".search_con").html(dContent);
+                    printAllBarcode();
+                    $("svg").click(function () {
+							let row = $(this).parent().parent().children("td");
+							PrintBarcode(row);
+						});
+	               }
+	            }
+	       	 });
+	       }
+	    });
+    		// 각 버튼에 클릭 이벤트 핸들러 추가
+		    $("#btn_standBy").click(function() {
+		        filterData(1); // 1은 생산대기 상태에 해당하는 값
+		    });
+		
+		    $("#btn_ing").click(function() {
+		        filterData(2); // 2는 생산중 상태에 해당하는 값
+		    });
+		
+		    $("#btn_success").click(function() {
+		        filterData(3); // 3은 생산완료 상태에 해당하는 값
+		    });
+		    
+     		
+	 		function filterData(phase) {
+				
+				 let data = `search=${$(".search_text").val()}&phase=${phase}`;
+				 console.log(data);
+	            // AJAX 요청 보내기
+            $.ajax({
+                type: "POST",
+                url: "/search.do", // AJAX 요청을 처리할 서버 스크립트의 경로
+                data: data,
+                dataType: 'json',
+                success: function (data) {   
+				const datetimes = data;  
+				console.log(datetimes);
+				var dContent = "";
+				
+                if (datetimes.length === 0) {
+                    dContent = "<tr><td colspan='12'>일치하는 정보가 없습니다.</td></tr>";
+                    $('.search_con').html(dContent);
+                } else {
+                    for (let i = 0; i < datetimes.length; i++) {
+                        dContent += `<tr class="content_tr">`;
+                        dContent += `<td><input type="checkbox" name="select" id="select"></td>`;
+                        dContent += `<td>${datetimes[i].pNum}</td>`;
+                        dContent += `<td>${datetimes[i].productionNum}</td>`;
+                        dContent += `<td onclick="location.href='/PMModify'">${datetimes[i].productName}</td>`;
+                        dContent += `<td>${datetimes[i].cNum}</td>`;
+                        dContent += `<td>${datetimes[i].dateRegister}</td>`;
+                        dContent += `<td>${datetimes[i].dateFinish}</td>`;
+                        dContent += `<td>${datetimes[i].amount}</td>`;
+                        dContent += `<td>${datetimes[i].price}</td>`;
+                        dContent += `<td>${datetimes[i].boxCount}</td>`;
+                        dContent += `<td><button type="button">${getButtonText(datetimes[i].phase)}</button></td>`;   
+                        dContent += `<td><svg></svg></td>`;
+                        dContent += `</tr>`;
+                        
+                         // 상태(phase)에 따라 갯수 카운트
+                        switch (Number(datetimes[i].phase)) {
+                            case 1:
+                                standbyCount++;
+                                break;
+                            case 2:
+                                inProgressCount++;
+                                break;
+                            case 3:
+                                successCount++;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    var resultCount = datetimes.length;
+		
+		            // 결과를 특정 요소에 표시
+		            $(".result_count").text(resultCount + "개의 데이터가 조회되었습니다.");
+		            // 전체, 생산대기, 생산중, 생산완료 갯수를 각각 업데이트
+	                $(".condition td:nth-child(1) span").text(resultCount);
+	                $(".condition td:nth-child(2) span").text(standbyCount);
+	                $(".condition td:nth-child(3) span").text(inProgressCount);
+	                $(".condition td:nth-child(4) span").text(successCount);
+                				
+                    // 검색 결과를 표시할 요소를 찾아 업데이트
+                    $(".search_con").html(dContent);
+                    printAllBarcode();
+                    $("svg").click(function () {
+							let row = $(this).parent().parent().children("td");
+							PrintBarcode(row);
+						});
+               }
             }
-        });
-    });
-});
-
+       	 });
+      };
+       
+    });	//load end
+	
+    
+		
+	
+    
  </script>
 
-	<div class="container">
+	<div class="pmContainer">
 		
 		<div class="top">
 			<img src="/img/home.png">
@@ -115,7 +456,7 @@
 					<th>생산지시 관리</th>
 				</tr>
 				<tr>
-					<td class="none"><span class="result_count"></span></td>
+					<td class="none"><span class="result_count">[[${select_list.size()}]]개의 데이터가 조회되었습니다.</span></td>
 				</tr>
 			</table>
 		
@@ -125,9 +466,9 @@
 				<tr>
 					
 					<td class="date_start">생산시작일자</td>
-					<td><input class="date1" type="datetime-local"></td>
+					<td><input class="date1" type="date"></td>
 					<td class="date_end">생산종료일자</td>
-					<td><input class="date2" type="datetime-local"></td>
+					<td><input class="date2" type="date"></td>
 			
 				</tr>
 			</table>
@@ -136,10 +477,10 @@
 		
 			<table class="condition">
 				<tr>
-					<td>전체()</td>
-					<td>생산대기()</td>
-					<td>생산중()</td>
-					<td>생산완료()</td>
+					<td>전체(<span></span>)</td>
+					<td>생산대기(<span></span>)</td>
+					<td>생산중(<span></span>)</td>
+					<td>생산완료(<span></span>)</td>
 		
 					<td class="search_td"><input class="search_text"type="search" placeholder="검색"></td>
 					<td class="btn_td"><input class="search_btn"type="button" value="검색"></td>
@@ -165,6 +506,7 @@
 							<td>가격</td>						
 							<td>BOX생산수량</td>
 							<td>생산상태</td>
+							<td>바코드</td>
 						</tr>
 					</thead>
 			
@@ -176,7 +518,7 @@
 								<tr class="content_tr">
 									<td><input type="checkbox" name="select" id="select"></td>		
 									<td>[[${selectAll.pNum}]]</td>	
-									<td>[[${selectAll.orderNum}]]</td>	
+									<td>[[${selectAll.productionNum}]]</td>	
 									<td onclick="location.href='/PMModify'">[[${selectAll.productName}]]</td>	
 									<td>[[${selectAll.cNum}]]</td>	
 									<td>[[${selectAll.dateRegister}]]</td>	
@@ -184,7 +526,12 @@
 									<td>[[${selectAll.amount}]]</td>
 									<td>[[${selectAll.price}]]</td>
 									<td>[[${selectAll.boxCount}]]</td>
-									<td>[[${selectAll.phase}]]</td>	
+									<td th:switch="${selectAll.phase}">
+									  <button type="button"id="btn_standBy" th:case="1">생산대기</button>
+									  <button type="button"id="btn_ing" th:case="2">생산중</button>
+									  <button type="button"id="btn_success" th:case="3">생산완료</button>			
+									</td>
+									<td><svg></svg></td>															
 								</tr>
 							</th:block>
 						
@@ -193,8 +540,8 @@
 			
 		
 		<div class="button-container">
-			<button class="delete_btn" id="delete_btn">삭제</button>
-			<button class="register_btn" onclick="window.location.href = '/PMRegister';">등록</button>
+			<button type="button" class="delete_btn" id="delete_btn">삭제</button>
+			<button type="button"class="register_btn" onclick="window.location.href = '/PMRegister';">등록</button>
 		</div>
 		
 			

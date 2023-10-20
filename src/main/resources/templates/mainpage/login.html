@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="EUC-KR">
-<title>Insert title here</title>
+<title>MES Lunch 로그인</title>
 <link rel="stylesheet" href="/mainpage/login.css">
 
 			<style>
@@ -10,9 +10,10 @@
 </style>
 </head>
 <body>	
-				<th><img src="/img/logo4.png" class="title"></th>			
 	<div class="container">
 			 <form action="/login" id="login-form" method="post">
+				 <fieldset>
+					 <legend><img src="/img/logo4.png" class="title"></legend>
 		<table>
 			<tr>
 				<td id="id"><input type="text" id="insert_id" name="userId" class="id" placeholder="아이디를 입력하세요." ></td>
@@ -20,13 +21,19 @@
 			<tr>
 				<td id="pw"><input type="password" name="passwd" id="insert_passwd" class="pw" placeholder="비밀번호를 입력하세요."></td>
 			</tr>
-			<tr>
-				<td><input type="checkbox" id="check_keep_login"><a class="txt_keep_login">로그인 상태 유지</a></td>
-			</tr>
+			
 			<tr>
 				<td><button type="submit" class="login" >로그인</button></td>
 			</tr>
 		</table>	
+			<ul>
+			<li style="width: fit-content;"><a href="/findId" class="search" id="idsearch" >아이디 찾기</a></li>
+			<li>|</li>
+			<li><a href="/findpw" class="search" id="pwsearch">비밀번호 찾기</a></li>
+			<li>|</li>
+			<li><a href="/join" class="search" id="join">회원가입</a></li>
+			</ul>
+			</fieldset>
 		</form>
 
 	</div>

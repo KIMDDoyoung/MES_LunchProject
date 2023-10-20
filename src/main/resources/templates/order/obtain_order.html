@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/obtainorder/obtain_order.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="js/JsBarcode.code128.min.js"></script>
+	<script src="js/bxlcommon.js"></script>
+	<script src="js/bxllabel.js"></script>
+
+</head>
+<script>
+	function search_order() {
+		currentPage = 0;
+		showPage(currentPage);
+		let data = {
+			startDate: $('#cal_on1').val(),
+			endDate: $('#cal_on2').val(),
+			startDate1: $('#cal_on3').val(),
+			endDate1: $('#cal_on4').val(),
+			kind: $('#sel_kind').val(),
+			search: $(".txt_search").val()
+		};
+
+		$.ajax({
+			url: '/obtain/search',
+			data: data,
+			type: 'post',
+			dataType: 'json',
+			success: function (r) {
+				console.log(r);
+				var tag = "";
+
+				if (r.length === 0) {
+					tag += "<tr><td colspan='10'>일치하는 정보가 없습니다.</td></tr>";
+					$(".bodyClass").html(tag);
+				} else {
+					for (let i = 0; i < r.length; i++) {
+						tag += `<tr class="info">`;
+						tag += `<td><input type='checkbox' class='check_one'></td>`;
+						tag += `<td>${r[i].sNum}</td>`;
+						tag += `<td>${r[i].cNum}</td>`;
+						tag += `<td>${r[i].pName}</td>`;
+						tag += `<td>${r[i].dateOrder}</td>`;
+						tag += `<td>${r[i].dateStartShip}</td>`;
+						tag += `<td>${r[i].dateToArrive}</td>`;
+						tag += `<td>${r[i].sPhase}</td>`;
+						tag += `<td>${r[i].sAmount}</td>`;
+						tag += `<td><svg></svg></td>`;
+						tag += `</tr>`;
+					}
+					$(".bodyClass").html(tag);
+					generateBarcode();
+					updateDataCount(r.length);
+					$("svg").click(function(){
+						let row = $(this).parent().parent().children("td");
+						PrintBarcode(row);
+					});
+
+				}
+			}
+		});
+	};
+	$(function () {
+		//바코드 호출
+		generateBarcode();
+
+		//바코드 리더기 처리
+		$(".txt_search").keyup(function (e) {
+			if (e.keyCode == 13)
+				$('.btn_search').click();
+
+		});
+		$(".btn_reset").click(function (e) {
+			$(".txt_search").val('');
+			$('.btn_search').click();
+
+		});
+		//바코드 클릭했을 때 바코드 출력시키는 기능
+		$("svg").click(function(){
+			let row = $(this).parent().parent().children("td");
+			PrintBarcode(row);
+		});
+	});
+	//=================바코드 생성 함수=================
+	function generateBarcode() {
+		let row = $(".info");
+
+		$(row).each(function (idx, obj) {
+			console.log($(obj).children("td").eq(1).text());
+			let barcodeValue = $(obj).children("td").eq(0).text();
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {format: "CODE128"});
+		});
+	}
+	//----------바코드 출력 함수---------------------
+	var issueID = 1;
+	var printer_name = 'Printer1';
+	
+	function viewResult(result) {
+		console.log(result);
+	}
+	
+	function PrintBarcode(row) {
+		console.log(row);
+		var barCodeSymbol = 1;
+		var barCodeHeight = 100;
+		var barWidth = 4;
+		var nBarWidth = parseInt(barWidth / 2);
+		var barCodeHri = 1;
+
+		setLabelId(issueID);
+
+		checkLabelStatus();
+		clearBuffer();
+		
+		setWidth(576);
+		
+		drawDeviceFont("수주 정보",30,10,'b',1,1,0,0,1,0);
+		drawBlock(30,40,530,45,'B',5);
+		drawDeviceFont(`수주 번호 : ${$(row).eq(1).text()}`,30,50,'a',1,1,0,0,0,0);
+		drawDeviceFont(`고객 업체 번호 : ${$(row).eq(2).text()}`,30,70,'a',1,1,0,0,0,0);
+		drawDeviceFont(`제품명 : ${$(row).eq(3).text()}`,30,90,'a',1,1,0,0,0,0);
+		drawDeviceFont(`수주 일자 : ${$(row).eq(5).text()}`,30,110,'a',1,1,0,0,0,0);
+		drawDeviceFont(`납품 일자 : ${$(row).eq(6).text()}`,30,130,'a',1,1,0,0,0,0);
+		drawDeviceFont(`수주 수량 : ${$(row).eq(8).text()}`,30,150,'a',1,1,0,0,0,0);
+		
+		drawBlock(30,180,530,185,'B',5);
+		draw1DBarcode($(row).eq(1).text(), 70, 200, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+		printBuffer();
+		
+		var strSubmit = getLabelData();
+
+		console.log(strSubmit);
+
+		issueID++;
+		console.log(strSubmit, viewResult);
+		requestPrint(printer_name, strSubmit, viewResult);
+
+	}
+	
+</script>
+
+<body>
+	<th:block th:insert="header/header.html"></th:block>
+	<div class="All">
+		<div class="obtainheader">
+			<a href="/mainpage">
+				<img src="/img/home.png" alt="" class="source" id="home">
+			</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/ObtainOrder" class="source" id="headText">수주관리</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/ObtainOrder" class="source" id="headText">수주조회</a>
+		</div>
+		<h2>수주조회</h2>
+		<p class="inquire"><span class="count"></span>의 데이터가 조회되었습니다.</p>
+		<table id="search_first">
+			<tr>
+				<td class="search_date">수주일자</td>
+				<td class="date">
+					<div class="session">
+						<input type="date" class="input_calendar" id="cal_on1">
+						<b>~</b>
+						<input type="date" class="input_calendar" id="cal_on2">
+					</div>
+				</td>
+				<td class="search_date">납기일자</td>
+				<td class="date">
+					<div class="session">
+						<input type="date" class="input_calendar" id="cal_on3">
+						<b>~</b>
+						<input type="date" class="input_calendar" id="cal_on4">
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div id="process_button">
+			<div class="button">
+				<button value="button" class="btn_click" id="all">전체([[${countAllObtainOrder}]])</button>
+				<button value="button" class="btn_click" id="0">공정투입([[${countAllObtainOrder1}]])</button>
+				<button value="button" class="btn_click" id="1">공정완료([[${countAllObtainOrder2}]])</button>
+				<button value="button" class="btn_click" id="2">생산완료([[${countAllObtainOrder3}]])</button>
+				<button value="button" class="btn_click" id="3">출하검사([[${countAllObtainOrder4}]])</button>
+				<button value="button" class="btn_click" id="4">출하완료([[${countAllObtainOrder5}]])</button>
+			</div>
+			<div class="order_search">
+				<select id="sel_kind"
+					style="margin-right: 5px; border-color: #F08080; flex-shrink: 0; border-radius: 4px;">
+					<option value="s_num">수주번호</option>
+					<option value="c_num">고객업체코드</option>
+					<option value="p_name">제품명</option>
+				</select>
+				<img src="/img/search_icon.png" alt="" id="img_search">
+				<input type="text" class="txt_search" autofocus>
+				<button class="btn_search">검색</button>
+				<button class="btn_reset">초기화</button>
+			</div>
+		</div>
+		<table id="search_result">
+			<thead>
+				<tr>
+					<th><input type="checkbox" class="check_all"></th>
+					<th>수주번호</th>
+					<th>고객업체코드</th>
+					<th>제품명</th>
+					<th>등록일자</th>
+					<th>수주일자</th>
+					<th>납품일자</th>
+					<th>단계</th>
+					<th>수주수량</th>
+					<th>바코드</th>
+				</tr>
+			</thead>
+			<tbody class="bodyClass">
+				<tr class="info" th:each="sell : ${list}">
+					<td><input type="checkbox" class="check_one"></td>
+					<td>[[${sell.sNum}]]</td>
+					<td>[[${sell.cNum}]]</td>
+					<td>[[${sell.pName}]]</td>
+					<td>[[${sell.dateOrder}]]</td>
+					<td>[[${sell.dateStartShip}]]</td>
+					<td>[[${sell.dateToArrive}]]</td>
+					<td>[[${sell.sPhase}]]</td>
+					<td>[[${sell.sAmount}]]</td>
+					<td><svg></svg></td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="12">
+						<button id="prevPage">이전 페이지</button>
+						<button id="nextPage">다음 페이지</button>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div class="btn_area">
+			<button value="button" class="btn_delete">삭제</button>
+			<button value="button" class="btn_upload">등록</button>
+		</div>
+	</div>
+</body>
+<script>
+	// 페이지 설정
+	let currentPage = 1; // 현재 페이지 번호를 저장할 변수 추가
+	const boards = document.querySelectorAll('.info');
+	const prevPageButton = document.getElementById('prevPage');
+	const nextPageButton = document.getElementById('nextPage');
+	const boardsPerPage = 10;
+
+	function showPage(page) {
+		boards.forEach((board, index) => {
+			if (index >= page * boardsPerPage && index < (page + 1) * boardsPerPage) {
+				board.style.display = 'table-row'; // 변경된 부분: 'table-row'로 설정
+			} else {
+				board.style.display = 'none';
+			}
+		});
+	}
+
+	function updatePageButtons() {
+		if (currentPage === 0) {
+			prevPageButton.disabled = true;
+		} else {
+			prevPageButton.disabled = false;
+		}
+
+		if (currentPage === Math.ceil(boards.length / boardsPerPage) - 1) {
+			nextPageButton.disabled = true;
+		} else {
+			nextPageButton.disabled = false;
+		}
+	}
+
+	prevPageButton.addEventListener('click', () => {
+		if (currentPage > 0) {
+			currentPage--;
+			showPage(currentPage);
+			updatePageButtons();
+		}
+	});
+
+	nextPageButton.addEventListener('click', () => {
+		if (currentPage < Math.ceil(boards.length / boardsPerPage) - 1) {
+			currentPage++;
+			showPage(currentPage);
+			updatePageButtons();
+		}
+	});
+</script>
+
+</html>

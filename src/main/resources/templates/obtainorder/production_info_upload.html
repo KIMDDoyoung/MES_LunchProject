@@ -1,185 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/obtainorder/production_info_upload.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-</head>
-<script>
-    
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/obtainorder/production_info_upload.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script>
+	let isIdVerified = false;
+
+	function confirm_pNum() {
+		let pNumValue = $("#production_num").val(); // 입력란의 값을 가져옵니다.
+
+		if (pNumValue === "") { // 입력란이 비어 있는지 확인합니다.
+			alert("번호를 입력하십시오.");
+		} else {
+			let data = `pNum=${pNumValue}`;
+			$.ajax({
+				url: '/confirm/pNum',
+				data: data,
+				type: 'post',
+				dataType: 'json',
+				success: function (r) {
+					if (r == 1) {
+						alert("중복된 번호입니다. 다시 시도하십시오.");
+					} else {
+						isIdVerified = true; // 중복 인증 상태를 true로 변경
+						alert("사용가능한 번호입니다.");
+						$(".pNum_result").html("<span>사용가능</span>");
+					}
+				}
+			});
+		}
+	}
+	$(function () {
+		$('#btn_check').click(confirm_pNum);
+		$('.btn_cancel').click(function(){
+			window.location.href = "/ProductionInfo";
+		});
+	});
 </script>
+</head>
+
 <body>
-    <div class="All">
-        <div class="header">
-            <a href="/mainpage">
-            	<img src="/img/home.png" alt="" class="source" id="home">
-            </a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">수주관리</a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">제품정보</a>
-        </div>
-        <h1>제품정보 정보 등록</h1>
-        <div class="form">
-            <table class="input_img_form">
-                <tr>
-                    <td class="input_img"> </td>
-                </tr>
-                <tr>
-                    <td class="input_img_name">
-                        <input type="file" class="file_click"> 
-                    </td>
-                </tr>
-            </table>
-            <table class="production_form">
-             <tr>
-                 <td class="thead">제품번호<span class="red">*</span></td>
-                 <td class="check">
-                     <input type="text" class="inputtext" id="production_num" name="pNum">
-                     <button type="button" id="btn_check">중복검사</button>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">제품명<span class="red">*</span></td>
-                 <td><input type="text" class="inputtext" id="production_name" name="pName"></td>
-             </tr>
-             <tr>
-                 <td class="thead">규격</td>
-                 <td><input type="text" class="inputtext" id="leader" name="unit"></td>
-             </tr>
-             <tr>
-                 <td class="thead">BOX당 수량<span class="red">*</span></td>
-                 <td><input type="text" class="inputtext" id="business_registration_num" name="boxCount"></td>
-             </tr>
-             <tr>
-                 <td class="thead">박스당 표시단위</td>
-                 <td>
-                     <select name="" id="box_unit">
-                         <option value="BOX">BOX</option>
-                         <option value="">직접입력</option>
-                     </select>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">포장지당 중량(단위)</td>
-                 <td>
-                     <input type="text" class="inputtext" id="wrap" name="pWeight">
-                     <select name="pWeight_1" id="wrap_unit">
-                         <option value="kg">kg</option>
-                         <option value="g">g</option>
-                         <option value="mg">mg</option>
-                         <option value="L">L</option>
-                         <option value="ml">ml</option>
-                     </select>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">가격</td>
-                 <td><input type="text" class="inputtext" id="price" name="price"></td>
-             </tr>
-             <tr>
-                 <td class="thead">협력업체</td>
-                 <td>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business1" placeholder="1." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business2" placeholder="2." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business3" placeholder="3." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business4" placeholder="4." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business5" placeholder="5." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business6" placeholder="6." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business7" placeholder="7." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business8" placeholder="8." name="business_name[]" readonly="" value="" onclick="pop_up('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="/img/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">유통기한<span class="red">*</span></td>
-                 <td>
-                     <input type="text" class="input_business" id="expiration_date">
-                     <span class="ex">※예시 : 2023-04-01 00:00:00.000</span>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">작업표준 정보<span class="red">*</span></td>
-                 <td>
-                     <div class="search">
-                         <input type="text" class="input_business" id="business8" name="work_standard[]" readonly="" value="" onclick="pop_up2('/popup/popup_coo.html',jQuery('#myform').serialize(),'.popup-5')">
-                         <img src="source/search_icon.png" alt="" value="button" class="search_icon">
-                     </div>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">진열순서</td>
-                 <td><input type="text" class="inputtext" id="order_of"></td>
-             </tr>
-             <tr>
-                 <td class="thead">진열여부</td>
-                 <td>
-                     <label class="checkyn">
-                         <input type="radio" name="display" value="Y">
-                         "YES"
-                     </label>
-                     <label class="checkyn">
-                         <input type="radio" name="display" value="N">
-                         "NO"
-                     </label>
-                 </td>
-             </tr>
-             <tr>
-                 <td class="thead">구분</td>
-                 <td>
-                     <label class="checkyn">
-                         <input type="radio" name="sPase" value="0">
-                         0
-                     </label>
-                     <label class="checkyn">
-                         <input type="radio" name="sPase" value="1">
-                         1
-                     </label>
-                     <label class="checkyn">
-                         <input type="radio" name="sPase" value="2">
-                         2
-                     </label>
-                     <label class="checkyn">
-                         <input type="radio" name="sPase" value="3">
-                         3
-                     </label>
-                     <label class="checkyn">
-                         <input type="radio" name="sPase" value="4">
-                         4 - 완제품
-                     </label>
-                 </td>
-             </tr>
-            </table>
-        </div>
-    <div class="btn_area">
-        <button value="button" class="btn_cancel">취소</button>
-        <button value="button" class="btn_upload">등록</button>
-    </div>
-    </div>
+	<th:block th:insert="header/header.html"></th:block>
+	<div class="All">
+		<div class="obtainheader">
+			<a href="/mainpage">
+				<img src="/img/home.png" alt="" class="source" id="home">
+			</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/ProductionInfo" class="source" id="headText">수주관리</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/ProductionInfo" class="source" id="headText">제품정보</a>
+		</div>
+		<h2>제품정보 정보 등록</h2>
+		<form method="post" action="/production/upload">
+			<table class="production_form">
+				<tr>
+					<td class="thead">제품번호<span class="red">*</span></td>
+					<td class="check">
+						<input type="text" class="inputtext" id="production_num" name="pNum">
+						<button type="button" id="btn_check">중복검사</button>
+						<label class="pNum_result"></label>
+					</td>
+				</tr>
+				<tr>
+					<td class="thead">제품명<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="production_name" name="pName"></td>
+				</tr>
+				<tr>
+					<td class="thead">규격</td>
+					<td>
+						<select class="box_unit" name="unit">
+							<option value="BOX">BOX</option>
+							<option value="STYROFOAM">스티로폼</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="thead">사이즈</td>
+					<td>
+						<select class="box_unit" name="pSize">
+							<option value="200x200">200x200</option>
+							<option value="200x250">200x250</option>
+							<option value="250x300">250x300</option>
+							<option value="250x300">250x300</option>
+							<option value="300x300">300x300</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="thead">개수</td>
+					<td><input type="text" class="inputtext" id="amount" name="pAmount"></td>
+				</tr>
+				<tr>
+					<td class="thead">BOX당 수량<span class="red">*</span></td>
+					<td><input type="text" class="inputtext" id="business_registration_num" name="boxCount"></td>
+				</tr>
+				<tr>
+					<td class="thead">포장지당 중량(단위)</td>
+					<td>
+						<input type="text" class="inputtext" id="wrap" name="pWeight">
+						<select name="pWeight_1" id="wrap_unit">
+							<option value="kg">kg</option>
+							<option value="g">g</option>
+							<option value="mg">mg</option>
+							<option value="L">L</option>
+							<option value="ml">ml</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="thead">가격</td>
+					<td><input type="text" class="inputtext" id="price" name="pPrice"></td>
+				</tr>
+				<tr>
+					<td class="thead">유통기한<span class="red">*</span></td>
+					<td>
+						<input type="text" class="input_business" id="expiration_date" name="pFinish">
+						<span class="ex">※예시 : 2023-04-01 00:00:00.000</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="thead">레시피<span class="red">*</span></td>
+					<td>
+						<select class="box_unit" name="recipeNum">
+							<option value="recipe1">recipe1</option>
+							<option value="recipe2">recipe2</option>
+							<option value="recipe3">recipe3</option>
+							<option value="recipe4">recipe4</option>
+							<option value="recipe5">recipe5</option>
+							<option value="recipe6">recipe6</option>
+							<option value="recipe7">recipe7</option>
+							<option value="recipe8">recipe8</option>
+							<option value="recipe9">recipe9</option>
+							<option value="recipe10">recipe10</option>
+							<option value="recipe11">recipe11</option>
+							<option value="recipe12">recipe12</option>
+							<option value="recipe13">recipe13</option>
+							<option value="recipe14">recipe14</option>
+							<option value="recipe15">recipe15</option>
+							<option value="recipe16">recipe16</option>
+							<option value="recipe17">recipe17</option>
+							<option value="recipe18">recipe18</option>
+							<option value="recipe19">recipe19</option>
+							<option value="recipe20">recipe20</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<div class="btn_area">
+				<button type="button" class="btn_cancel">취소</button>
+				<button type="submit" class="btn_upload">등록</button>
+			</div>
+		</form>
+	</div>
 </body>
 </html>

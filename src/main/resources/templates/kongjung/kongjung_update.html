@@ -2,63 +2,94 @@
 <html>
 
 <head>
-	<meta charset="EUC-KR">
-	<title>공정 정보</title>
-	
-	<th:block th:include="header/header.html"></th:block>
-	<link rel="stylesheet" href="/Kongjung/kongjung_update.css">
-	<link rel="stylesheet" href="/common/global.css">
+    <meta charset="UTF-8">
+    <title>공정 정보</title>
 
+    <th:block th:include="header/header.html"></th:block>
+    <link rel="stylesheet" href="/Kongjung/kongjung_update.css">
+    <link rel="stylesheet" href="/common/global.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-	<div id="container">
-		<ul class="menu1" style="width: 1250px;">
-			<li>
-				<a href="/main.html">
-					<img src="img/home.png" width="40" height="40" viewBox="0 0 51 51">
-				</a>
-			</li>
-			<div style="margin-top: 15px;" width="300px" id="menu2">
-				<li>
-					<img src="img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
-				</li>
-				<li>
-					<h4>공정 관리</h4>
-				</li>
-				<li>
-					<img src="img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
-				</li>
-				<li>
-					<h4>공정 정보 수정</h4>
-				</li>
-			</div>
-		</ul>
-		<div class="name">
-			<h2>공정 정보 수정</h2>
-		</div>
-		<div class="table_container" style="margin-top: 20px;">
-			<table class="table" border="2" width="1250px">
-				<thead>
-					<tr>
-						<th id="col">공정 번호</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-
-						<td id="col1">레시피 설명</td>
-						<td id="col2"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div id="btn">
-			<button id="btn_cancle" onclick="location.href='kongjunginfo'" style="float:right">취소</button>
-			<button id="btn_update" onclick="btn_insert()" style="float:right">수정</button>
-		</div>
-	</div>
+    <div id="container">
+        <form id="updateForm" method="post" action="/kongjung_update/action">
+            <ul class="menu1" style="width: 1250px;">
+                <li>
+                    <a href="/main.html">
+                        <img src="/img/home.png" width="40" height="40" viewBox="0 0 51 51">
+                    </a>
+                </li>
+                <div style="margin-top: 15px;" width="300px" id="menu2">
+                    <li>
+                        <img src="/img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
+                    </li>
+                    <li>
+                        <h4>공정 관리</h4>
+                    </li>
+                    <li>
+                        <img src="/img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
+                    </li>
+                    <li>
+                        <h4>공정 정보 수정</h4>
+                    </li>
+                </div>
+            </ul>
+            <div class="name">
+                <h2>공정 정보 수정</h2>
+            </div>
+            <div class="table_container" style="margin-top: 20px;">
+                <table class="table" border="2" width="1250px">
+                    <thead>
+                        <tr>
+                            <th id="col">공정 번호</th>
+                            <th>
+                                <input type="text" id="processNum" name="processNum"  th:value="${ kongupdate.processNum}" style="float:left" readonly>
+                                    
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="col1">공정 명</td>
+                            <td id="col2">
+                                <input type="text" id="processName" name="processName" th:value="${ kongupdate.processName}" style="float:left" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="col1">재료 명</td>
+                            <td id="col2">
+                                <input type="text" id="materialNo" name="materialNo" th:value="${ kongupdate.materialNo}" style="float:left" required>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="btn">
+                    <button id="btn_cancel" onclick="location.href='kongjung_info'" style="float:right">취소</button>
+                    <button type="submit" id="btn_update" style="float:right">수정</button>
+                </div>
+            </div>
+    </div>
 </body>
+
+<script>
+    $(document).ready(function(){
+        $("#btn_update").click(function(){
+            var formData = $("#updateForm").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/kongjung_update", 
+                data: formData,
+                success: function(data){
+                    alert("수정이 완료되었습니다.");
+                    location.href = "/Order";
+                },
+                error: function(){
+                    alert("수정에 실패했습니다.");
+                }
+            });
+        });
+    });
+</script>
 
 </html>

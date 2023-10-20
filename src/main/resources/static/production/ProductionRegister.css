@@ -1,7 +1,8 @@
 @charset "UTF-8";
-.container{
-	position: absolute;
-	top:380px;
+.pmContainer{
+	margin:0 auto;
+	width: 1280px;
+	
 }
 a{
 	text-decoration: none;
@@ -54,7 +55,7 @@ th{
 	border-collapse: collapse;
 }
 
-input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+input[type="date"]::-webkit-calendar-picker-indicator{
 	cursor: pointer;
 	transform: scale(1.5);
 }

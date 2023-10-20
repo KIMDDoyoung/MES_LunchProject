@@ -58,6 +58,7 @@ h3 {
 	border: 1px solid #929292;
 	color: #fff;
 	background-color: #f08080;
+	cursor: pointer;
 }
 
 #search>input {
@@ -69,7 +70,7 @@ h3 {
 	background-color: #fff;
 }
 
-#table {
+#materialTable {
 	border: 2px solid #242424;
 	border-collapse: collapse;
 	width: 90%;
@@ -134,4 +135,9 @@ th {
 }
 #btn_add{
 	margin-left: 10px;
+}
+
+#barcode{
+	width: 150px;
+	height: 50px;
 }

@@ -1,6 +1,7 @@
 package com.project.dto;
 
 import org.apache.ibatis.type.Alias;
+import java.util.UUID;
 
 @Alias("buy")
 public class OrderDTO {
@@ -29,9 +30,11 @@ public class OrderDTO {
 	 
 	 public OrderDTO() {
 		super();
-	}
+	 }
 	
-	
+
+
+
 
 	public OrderDTO(String buyNo, String dateOrder, String dateReceived, String materioalAmount, int mTotalPrice,
 			String buyName, String companyNo, String materioalName, String materialNo, int mBOXcount, String mUnit,
@@ -195,7 +198,6 @@ public class OrderDTO {
 				+ ", mBOXcount=" + mBOXcount + ", mUnit=" + mUnit + ", managerName=" + managerName + ", managerContact="
 				+ managerContact + ", mMail=" + mMail + "]";
 	}
-
 
 
 

@@ -10,46 +10,166 @@
 	<link rel="stylesheet" href="/common/global.css">
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="/js/JsBarcode.code128.min.js"></script>
+<script src="js/bxlcommon.js"></script>
+<script src="js/bxllabel.js"></script>
 	<script>
-		$(document).ready(function () {
-			// 페이지가 로드되자마자 조회 갯수를 표시하는 함수
-			function displayResultCount() {
-				let data = `search=${$(".search_img").val()}`;
-				$.ajax({
-					url: "/search1.do",
-					data: data,
-					dataType: "json",
-					type: "post",
-					success: function (r) {
-						var tag = "";
-						for (i = 0; i < r.length; i++) {
-							tag += "<tr>";
-							tag += "<td scope='row'><input class='form-check-input' type='checkbox' name='checkbox2' onclick='checkSelectAll(this)' id='checkbox1'></td>";
-							tag += `<td onclick="location.href='/recipe_update'">` + r[i].recipeNum + "</td>";
-							tag += "<td>" + r[i].processTime + "</td>";
-							tag += "</tr>";
-						}
-						var resultCount = r.length;
-
-						// 결과를 특정 요소에 표시
-						$(".result_count").text(resultCount + "개의 데이터가 조회되었습니다.");
-
-						$(".recipeN").html(tag);
-					}
-				});
-			}
-
-			// 페이지 로드 시 조회 갯수 표시 함수 호출
-			displayResultCount();
-
-			// 검색 버튼 클릭 시도 조회 갯수 표시 함수 호출
-			$(".search_btn").click(function () {
-				displayResultCount();
+		//바코드 생성 함수
+	function printAllBarcode() {
+		//recipeN class의 tr 지정
+		let row = $(".recipeN tr");
+		
+		$(row).each(function (idx, obj) {
+			//tr의 자녀 속성인 td중 1번째인 공정번호 선택
+			console.log($(obj).children("td").eq(1).text());
+			let barcodeValue = $(obj).children("td").eq(1).text();
+			//td중 마지막 속성의 자녀 속성인 svg에 0번째 선택
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {
+				//바코드 크기
+				format: "CODE128", width: 1,
+				height: 20
 			});
 		});
+	}
+	//바코드 출력 함수
+	var issueID = 1;
+	var printer_name = 'Printer1';
 
-		 
-	</script>
+	function viewResult(result) {
+		console.log(result);
+	}
+
+	function PrintBarcode(row) {
+		console.log(row);
+		//	return
+		var barCodeSymbol = 1;
+		var barCodeHeight = 100;
+		var barWidth = 4;
+		var nBarWidth = parseInt(barWidth / 2);
+		var barCodeHri = 1;
+
+		setLabelId(issueID);
+
+		checkLabelStatus();
+		clearBuffer();
+
+		setWidth(576);
+
+		drawDeviceFont("공정 정보", 30, 10, 'b', 1, 1, 0, 0, 1, 0);
+		drawBlock(30, 40, 530, 45, 'B', 5);
+		drawDeviceFont(`레시피 코드 : ${$(row).eq(1).text()}`, 30, 50, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`소요 시간 : ${$(row).eq(2).text()}`, 30, 80, 'd', 1, 1, 0, 0, 0, 0);
+		//x,y,x,y 좌하단 우하단,글꼴,두께
+		drawBlock(30, 120, 530, 125, 'B', 5);
+		draw1DBarcode($(row).eq(1).text(), 70, 150, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+		printBuffer();
+
+		var strSubmit = getLabelData();
+
+		console.log(strSubmit);
+
+		issueID++;
+		console.log(strSubmit, viewResult);
+		requestPrint(printer_name, strSubmit, viewResult);
+	}
+
+
+	
+	
+    // 페이지가 로드되자마자 조회 갯수를 표시하는 함수
+    function searchRecipe() {
+    let data = `search=${$(".search_img").val()}`;
+    $.ajax({
+        url: "/search.do",
+        data: data,
+        dataType: "json",
+        type: "post",
+        success: function (r) {
+            var tag = "";
+            for (i = 0; i < r.length; i++) {
+                tag += "<tr>";
+                tag += "<td scope='row'><input class='form-check-input' type='checkbox' name='checkbox2' onclick='checkSelectAll(this)' id='checkbox1'></td>";
+                tag += `<td><a href="/kongjung/recipeupdate/${r[i].recipeNum}">${r[i].recipeNum}</a></td>`;
+                tag += `<td>${r[i].processTime}</td>`;
+                tag += "<td><svg></svg></td>";
+                tag += "</tr>";
+            }
+
+            $(".recipeN").html(tag);
+z
+            printAllBarcode();
+
+            // 바코드 클릭했을 때 바코드 출력시키는 기능
+            $("svg").click(function () {
+                let row = $(this).parent().parent().children("td");
+                PrintBarcode(row);
+            });
+        }
+    });
+}
+    
+   
+
+//선택삭제
+$(function () {
+	
+	
+	 // 검색 버튼 클릭 시도 조회 갯수 표시 함수 호출
+    $(".search_btn").click(function() {
+        searchRecipe();
+    });
+		//바코드 찍으면 자동으로 엔터값 입력
+		$(".search_img").keyup(function (e) {
+			console.log(e.keyCode)
+			if (e.keyCode == 13){
+				e.preventDefault();
+				$('.search_btn').click();
+			}
+		});
+		//바코드 클릭했을 때 바코드 출력시키는 기능
+		$("svg").click(function () {
+			let row = $(this).parent().parent().children("td");
+			PrintBarcode(row);
+		});
+		
+	
+    	printAllBarcode();
+		$('#btn_delete').click(function () {
+        var selectedItems = $('input[name="checkbox2"]:checked');
+
+        if (selectedItems.length === 0) {
+            alert('삭제할 항목을 선택하세요.');
+        } else {
+            if (confirm('선택한 항목을 삭제하시겠습니까?')) {
+                selectedItems.each(function () {
+                    var recipeNum = $(this).closest('tr').find('td:nth-child(2)').text();
+					console.log();
+                    $.ajax({
+                        url: '/recipe_info/delete/' + recipeNum,
+                        type: 'post',
+                        success: function (response) {
+                            console.log(response);
+                            if (response) {
+                                alert('선택 항목을 삭제했습니다.');
+                                $(this).closest('tr').remove(); // 테이블에서 삭제된 행을 제거
+                                location.reload(); // 페이지 새로 고침
+                            } else {
+                                alert('삭제하지 못했습니다.');
+                            }
+                        },
+                        error: function () {
+                            alert('서버 연결 실패');
+                        }
+                    });
+                });
+            }
+        }
+    });
+});
+
+ 
+
+</script>
 </head>
 
 <body>
@@ -57,18 +177,18 @@
 		<ul class="menu1" style="width: 1250px;">
 			<li>
 				<a href="/main.html">
-					<img src="img/home.png" width="40" height="40" viewBox="0 0 51 51">
+					<img src="/img/home.png" width="40" height="40" viewBox="0 0 51 51">
 				</a>
 			</li>
 			<div style="margin-top: 15px;" width="300px" id="menu2">
 				<li>
-					<img src="img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
+					<img src="/img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
 				</li>
 				<li>
 					<h4>공정 관리</h4>
 				</li>
 				<li>
-					<img src="img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
+					<img src="/0z1img/arrow_right_pink.png" width="12" height="20" viewBox="0 0 17 29">
 				</li>
 				<li>
 					<h4>통합 레시피 정보</h4>
@@ -94,26 +214,27 @@
 								id="checkbox1" onclick="selectAll(this)">
 						</th>
 						<th id="col">레시피 코드</th>
-						<th>소요 시간</th>
+						<th>소요 시간(분)</th>
+						<th>바코드</th>
 					</tr>
 				</thead>
 				<tbody class="recipeN">
 					<tr th:each="r : ${recipeList}" >
 						<td scope="row">
 							<input class="form-check-input" type="checkbox" name="checkbox2"
-								onclick="checkSelectAll(this)" id="checkbox1">
+								onclick="checkSelectAll(this)" id="checkbox2">
 						</td>
-						<td onclick="location.href='/recipe_update'">[[${r.recipeNum}]]</td>
+						<td><a id="rnum" th:href="@{/kongjung/recipeupdate/{r_num}(r_num=${r.recipeNum})}">[[${r.recipeNum}]]</a></td>
 
 						<td>[[${r.processTime}]]</td>
+						<td><svg></svg></td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 		<div id="btn">
-			<button id="btn_delete" style="float: left" onclick="btn_delete()">선택삭제</a></button>
-			<button id="btn_insert" onclick="btn_insert()" style="float: right">등록</button>
-			<button id="btn_update" onclick="btn_update()" style="float: right">수정</button>
+			<button id="btn_delete" style="float: left">선택삭제</a></button>
+			<button id="btn_insert" onclick="location.href='recipe_insert'" style="float: right">등록</button>
 		</div>
 	</div>
 </body>

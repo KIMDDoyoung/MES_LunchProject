@@ -6,35 +6,60 @@
 
 
 	<select id="selectAllMaterial" resultType="material">
-		select * from material order by m_num asc
+		select * from material
+		order by m_num asc
 	</select>
 	<select id="countAllMaterial" resultType="int">
-		select count(*) from material
+		select count(*) from
+		material
 	</select>
 	<select id="selectAllProduct" resultType="product">
-		select * from product order by p_num asc
+		select * from product
+		order by p_num asc
 	</select>
 	<select id="countAllProduct" resultType="int">
-		select count(*) from product
+		select count(*) from
+		product
 	</select>
 	<insert id="InsertMaterial" parameterType="material">
-		insert into material values(#{m_num},#{material_name},#{m_count},#{m_box_count},#{m_unit},NULL)
+		insert into material
+		values(#{m_num},#{material_name},#{m_count},#{m_box_count},#{m_unit},NULL)
 	</insert>
 	<insert id="InsertProduct" parameterType="product">
-		insert into product values(#{p_num},#{p_name},#{p_amount},#{recipe_num},NULL,null,null,null,null,null,null)
+		insert into product
+		values(#{p_num},#{p_name},#{p_amount},#{recipe_num},NULL,null,null,null,null,null,null)
 	</insert>
-	<select id="SelectMaterial" parameterType="String" resultType="material">
+	<select id="SelectMaterial" parameterType="String"
+		resultType="material">
 		select * from material where m_num = #{m_num}
 	</select>
-	<select id="SelectProduct" parameterType="String" resultType="product">
+	<select id="SelectProduct" parameterType="String"
+		resultType="product">
 		select * from product where p_num = #{p_num}
 	</select>
 	<update id="UpdateMaterial" parameterType="material">
-		UPDATE material SET material_name = #{material_name}, 
-		m_count = #{m_count}, m_box_count = #{m_box_count}, m_unit = #{m_unit}  WHERE m_num = #{m_num}
+		UPDATE material SET
+		material_name = #{material_name},
+		m_count = #{m_count}, m_box_count = #{m_box_count}, m_unit = #{m_unit} WHERE
+		m_num = #{m_num}
 	</update>
 	<update id="UpdateProduct" parameterType="product">
-		UPDATE product SET p_name = #{p_name}, p_amount= #{p_amount}, recipe_num = #{recipe_num}  WHERE p_num = #{p_num}
+		UPDATE product SET
+		p_name = #{p_name}, p_amount= #{p_amount}, recipe_num = #{recipe_num}
+		WHERE p_num = #{p_num}
 	</update>
-
+	<select id="SearchMaterial" parameterType="string"
+		resultType="material">
+		SELECT * From material WHERE M_NUM LIKE '%' || #{search} || '%'
+	</select>
+	<select id="SearchProduct" parameterType="string"
+		resultType="product">
+		SELECT * From product WHERE P_NUM LIKE '%' || #{search} || '%'
+	</select>
+	<delete id="DeleteMaterial" parameterType="string">
+		DELETE FROM MATERIAL WHERE M_NUM = #{mNum}
+	</delete>
+	<delete id="DeleteProduct" parameterType="string">
+		DELETE FROM PRODUCT WHERE P_NUM = #{pNum}
+	</delete>
 </mapper>

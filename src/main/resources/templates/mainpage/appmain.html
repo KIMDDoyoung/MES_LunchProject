@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>MES Lunch 메인페이지</title>
+<link rel="stylesheet" href="/mainpage/appmain.css">
+
+	<th:block th:include="/header/appheader.html" ></th:block>
+</head>
+<body>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<div class="main"  >
+	<a class="ch1" href="Order"><img id="ch1" src="/img/order.png"><br>발주관리</a>
+	<a class="ch2" href="ObtainOrder"><img id="ch2" src="/img/obtain_order.png"><br>수주관리</a>
+	<a class="ch3" href="kongjung_info"><img id="ch3" src="/img/process.png"><br>공정관리</a>
+	<a class="ch4" href="PM"><img id="ch4" src="/img/production.png"><br>생산관리</a>
+	<a class="ch5" href="/stock/material"><img id="ch5" src="/img/stock.png"><br>재고관리</a>
+	<a class="ch6" href="ConsignmentManagement"><img id="ch6" src="/img/shipment.png"><br>출하관리</a>
+	</div>
+</body>
+</html>

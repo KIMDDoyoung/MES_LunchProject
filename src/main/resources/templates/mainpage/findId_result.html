@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+</style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+*{
+	margin: 0;
+	padding: 0;
+}
+
+.container{
+position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 100%;
+    text-align: center;
+    margin-top: 100px;
+
+}
+/*.title{
+	margin-left: 44%;
+	padding-top: 5%;
+}*/
+#searchId{
+	display: inline-flex;
+	font-size: 20px;
+	padding-top:50px;
+	width: 500px;
+	color:black;
+	
+	 
+}
+legend {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: dimgrey;
+}
+fieldset{
+	border: 2px solid #ffbebe;
+	color: #ffbebe;
+	border-radius: 5px;
+	position: absolute;
+	width: 760px;
+
+}
+#pw{
+display: inline-flex;
+	font-size: 0px;
+	padding-top: 20px;
+	margin-left:75%;
+	width: 30%;
+	text-align: center;	
+	}
+.id,.pw{
+		font-size: 18px;
+		width: 330px;
+		height: 40px;
+		border: none;
+		border-bottom: 1px solid #d3d3d3;
+		outline: none;
+}
+.login{
+	border: 2px solid #ffbebe;
+	margin-top: 30px;
+	color:#000000;
+	margin-left: 220px ;
+	width: 155px;
+	height: 50px;
+	background-color: #ffffff;
+	cursor: pointer;
+	font-size: 20px;
+	font-weight: bold;
+	box-shadow: 3px 3px 3px white;
+	border-radius: 3px 0 3px 0 ;
+}
+
+.searchPw{
+	border: 2px solid #ffbebe;
+	margin-top: 30px;
+	color:#000000;
+	width: 155px;
+	height: 100px;
+	background-color: #ffffff;
+	cursor: pointer;
+	font-size: 20px;
+	font-weight: bold;
+	box-shadow: 3px 3px 3px white;
+}
+.login:hover{
+	color: #ffffff;
+	-webkit-tap-highlight-color: rgba(255,255,255,0);
+	background-color: #ffbebe;
+		border: 1px solid #ffffff;
+		box-shadow: 3px 3px 3px #000000;
+	
+}
+
+.searchPw:hover{
+	color: #ffffff;
+	-webkit-tap-highlight-color: rgba(255,255,255,0);
+	background-color: #ffbebe;
+		border: 1px solid #ffffff;
+		box-shadow: 3px 3px 3px #000000;
+	
+}
+
+
+li{
+	list-style-type: none;
+}
+.search{
+        text-align: center;
+        list-style-type: none;
+        color: black;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: bold;
+        line-height: normal;
+        letter-spacing: 0.12px;
+        text-decoration: none;
+    }
+     ul{
+		margin-top: 20px;
+        margin-left: 30%;
+        padding: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 330px;
+        height: 38px;
+        flex-shrink: 0;
+        margin-bottom: 50px;
+    }
+
+
+</style>
+
+<body>
+
+           <div class="container">
+        <form method="post">
+				 <fieldset>
+					 <legend><img src="/img/logo4.png" class="title"></legend>
+		<table>
+			<tr>
+				<p id="searchId">고객님의 정보와 일치하는 아이디는 : 님</p>
+			</tr>
+			
+			<tr>
+				<td><a href="/" type="submit" class="login" >로그인하러 가기</a></td>				
+				<td><a href="/findfw" type="submit" class="searchPw">비밀번호 찾기</a></td>
+
+			</tr>
+		</table>	
+			</fieldset>
+		</form>
+
+	</div>
+
+
+</body>
+</html>

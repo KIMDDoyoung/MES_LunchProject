@@ -1,9 +1,8 @@
 @charset "UTF-8";
-.container{
-	position: absolute;
-	top:380px;
-	left:50px;
-	
+.pmContainer{
+	margin:0 auto;
+	padding: 100px;
+
 }
 a{
 	text-decoration: none;
@@ -46,6 +45,7 @@ th{
 
 }
 .date_container{
+	height: 50px;
 	margin-bottom: 50px;
 	margin-top: 50px;
 	text-align: center;
@@ -73,12 +73,13 @@ th{
 	
 }
 
-input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+input[type="date"]::-webkit-calendar-picker-indicator{
 	cursor: pointer;
 	transform: scale(1.5);
 }
 
 .condition{
+	height: 50px;
 	margin-top:20px;
 	border-collapse: collapse;
 } 
@@ -92,15 +93,13 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{
 
 }
 
-
-
-.search_td,
+.search_td{
+	position: absolute;
+	right:200px;
+}
 .btn_td{
 	position: absolute;
-	right: 0px;
-}
-.search_td{
-	padding-right: 100px;
+	right:100px;
 }
 
 .search_btn,
@@ -135,6 +134,7 @@ thead{
 }
 
 .content_title{
+	
 	margin-top: 20px;
 	border-collapse: collapse;
 }
@@ -152,7 +152,7 @@ thead tr{
 	background-color: rgb(192, 192, 192);
 }
 
-.content_tr td{	
+.content_tr td:nth-child(4){	
 	cursor: pointer;
 }
 .content_tr:hover{	
@@ -165,4 +165,23 @@ thead tr{
     justify-content: space-between;
 	
 }
-
+#btn_standBy,
+#btn_ing,
+#btn_success{
+	width: 80px;
+	height: 40px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+#btn_standBy{
+	border: 1px solid rgb(255, 183, 219);
+	background-color: rgb(255, 213, 213);
+}
+#btn_ing{
+	border: 1px solid rgb(255, 79, 167);
+	background-color: rgb(255, 128, 128);
+}
+#btn_success{
+	border: 1px solid rgb(200, 0, 100);
+	background-color: rgb(255, 74, 74);
+}

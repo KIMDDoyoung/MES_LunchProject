@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+1<!DOCTYPE html>
 <html>
 
 <head>
@@ -9,75 +9,165 @@
 	<link rel="stylesheet" href="/kongjung/kongjung_info.css">
 	<link rel="stylesheet" href="/common/global.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/JsBarcode.code128.min.js"></script>
+<script src="js/bxlcommon.js"></script>
+<script src="js/bxllabel.js"></script>
 <script>
-$(document).ready(function() {
+		//바코드 생성 함수
+	function printAllBarcode() {
+		//processN class의 tr 지정
+		let row = $(".processN tr");
+		
+		$(row).each(function (idx, obj) {
+			//tr의 자녀 속성인 td중 1번째인 공정번호 선택
+			console.log($(obj).children("td").eq(1).text());
+			let barcodeValue = $(obj).children("td").eq(1).text();
+			//td중 마지막 속성의 자녀 속성인 svg에 0번째 선택
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {
+				//바코드 크기
+				format: "CODE128", width: 1,
+				height: 20
+			});
+		});
+	}
+	//바코드 출력 함수
+	var issueID = 1;
+	var printer_name = 'Printer1';
+
+	function viewResult(result) {
+		console.log(result);
+	}
+
+	function PrintBarcode(row) {
+		console.log(row);
+		//	return
+		var barCodeSymbol = 1;
+		var barCodeHeight = 100;
+		var barWidth = 4;
+		var nBarWidth = parseInt(barWidth / 2);
+		var barCodeHri = 1;
+
+		setLabelId(issueID);
+
+		checkLabelStatus();
+		clearBuffer();
+
+		setWidth(576);
+
+		drawDeviceFont("공정 정보", 30, 10, 'b', 1, 1, 0, 0, 1, 0);
+		drawBlock(30, 40, 530, 45, 'B', 5);
+		drawDeviceFont(`공정 번호 : ${$(row).eq(1).text()}`, 30, 50, 'd', 1, 1, 0, 0, 0, 0);
+		drawDeviceFont(`공정 명 : ${$(row).eq(2).text()}`, 30, 80, 'd', 1, 1, 0, 0, 0, 0);
+		//x,y,x,y 좌하단 우하단,글꼴,두께
+		drawBlock(30, 120, 530, 125, 'B', 5);
+		draw1DBarcode($(row).eq(1).text(), 70, 150, barCodeSymbol, nBarWidth, barWidth, barCodeHeight, 0, barCodeHri);
+		printBuffer();
+
+		var strSubmit = getLabelData();
+
+		console.log(strSubmit);
+
+		issueID++;
+		console.log(strSubmit, viewResult);
+		requestPrint(printer_name, strSubmit, viewResult);
+	}
+
+
+	
+	
     // 페이지가 로드되자마자 조회 갯수를 표시하는 함수
-    function displayResultCount() {
-        let data = `search=${$(".search_img").val()}`;
-        $.ajax({
-            url: "/search.do",
-            data: data,
-            dataType: "json",
-            type: "post",
-            success: function(r) {
-                var tag = "";
-                for (i = 0; i < r.length; i++) {
-                    tag += "<tr>";
-                    tag += "<td scope='row'><input class='form-check-input' type='checkbox' name='checkbox2' onclick='checkSelectAll(this)' id='checkbox1'></td>";
-                    tag += `<td id="over" onclick="location.href='/kongjung_update'">`+r[i].processNum+"</td>";
-                    tag += "<td>"+r[i].processName+"</td>";
-                    tag += "</tr>";
-                }
-                var resultCount = r.length;
-                
-                // 결과를 특정 요소에 표시
-                $(".result_count").text(resultCount + "개의 데이터가 조회되었습니다.");
-                
-                $(".processN").html(tag);
-            }
-        });
-    }
-    
-    // 페이지 로드 시 조회 갯수 표시 함수 호출
-    displayResultCount();
-    
-    // 검색 버튼 클릭 시도 조회 갯수 표시 함수 호출
-    $(".search_btn").click(function() {
-        displayResultCount();
-    });
-});
- 
-function deleteSelected() {
-    const selectedCheckboxes = document.querySelectorAll('input[name="checkbox2"]:checked');
-    
-    if (selectedCheckboxes.length === 0) {
-        alert("삭제할 항목을 선택하세요.");
-        return;
-    }
-
-    const selectedIds = selectedCheckboxes.map((checkbox) => Number(checkbox.closest("tr").querySelector("td:nth-child(2)").textContent));
-
-    // 서버로 선택된 항목의 ID를 전송하여 삭제 요청
+    function searchKongjung() {
+    let data = `search=${$(".search_img").val()}`;
     $.ajax({
-        url: "/deleteSelected.do", // 삭제 요청을 처리할 서버 엔드포인트를 지정
-        data: { selectedIds: selectedIds },
+        url: "/search.do",
+        data: data,
         dataType: "json",
         type: "post",
-        success: function(response) {
-            if (response.success) {
-                // 삭제가 성공하면 선택된 항목을 테이블에서 삭제
-                selectedCheckboxes.forEach((checkbox) => {
-                    checkbox.closest("tr").remove();
-                });
-
-                // 결과를 특정 요소에 표시
-                $(".result_count").text(response.resultCount + "개의 데이터가 조회되었습니다.");
-            } else {
-                alert("삭제에 실패했습니다.");
+        success: function (r) {
+            var tag = "";
+            for (i = 0; i < r.length; i++) {
+                tag += "<tr>";
+                tag += "<td scope='row'><input class='form-check-input' type='checkbox' name='checkbox2' onclick='checkSelectAll(this)' id='checkbox1'></td>";
+                tag += `<td><a href="/kongjung/kongupdate/${r[i].processNum}">${r[i].processNum}</a></td>`;
+                tag += `<td>${r[i].processName}</td>`;
+                tag += "<td><svg></svg></td>";
+                tag += "</tr>";
             }
-        },
+
+            $(".processN").html(tag);
+z
+            printAllBarcode();
+
+            // 바코드 클릭했을 때 바코드 출력시키는 기능
+            $("svg").click(function () {
+                let row = $(this).parent().parent().children("td");
+                PrintBarcode(row);
+            });
+        }
     });
 }
+    
+   
+
+//선택삭제
+$(function () {
+	
+	
+	 // 검색 버튼 클릭 시도 조회 갯수 표시 함수 호출
+    $(".search_btn").click(function() {
+        searchKongjung();
+    });
+		//바코드 찍으면 자동으로 엔터값 입력
+		$(".search_img").keyup(function (e) {
+			console.log(e.keyCode)
+			if (e.keyCode == 13){
+				e.preventDefault();
+				$('.search_btn').click();
+			}
+		});
+		//바코드 클릭했을 때 바코드 출력시키는 기능
+		$("svg").click(function () {
+			let row = $(this).parent().parent().children("td");
+			PrintBarcode(row);
+		});
+		
+	
+    	printAllBarcode();
+		$('#btn_delete').click(function () {
+        var selectedItems = $('input[name="checkbox2"]:checked');
+
+        if (selectedItems.length === 0) {
+            alert('삭제할 항목을 선택하세요.');
+        } else {
+            if (confirm('선택한 항목을 삭제하시겠습니까?')) {
+                selectedItems.each(function () {
+                    var processNum = $(this).closest('tr').find('td:nth-child(2)').text();
+					console.log();
+                    $.ajax({
+                        url: '/kongjung_info/delete/' + processNum,
+                        type: 'post',
+                        success: function (response) {
+                            console.log(response);
+                            if (response) {
+                                alert('선택 항목을 삭제했습니다.');
+                                $(this).closest('tr').remove(); // 테이블에서 삭제된 행을 제거
+                                location.reload(); // 페이지 새로 고침
+                            } else {
+                                alert('삭제하지 못했습니다.');
+                            }
+                        },
+                        error: function () {
+                            alert('서버 연결 실패');
+                        }
+                    });
+                });
+            }
+        }
+    });
+});
+
+ 
+
 </script>
 </head>
 
@@ -122,32 +212,33 @@ function deleteSelected() {
 							<input class="form-check-input" type="checkbox" value="selectall" name="selectall"
 								id="checkbox1" onclick="selectAll(this)">
 						</th>
-						<th scope="col">공정 번호</th>
+						<th id="col">공정 번호</th>
 						<th scope="col">공정 명</th>
+						<th>바코드</th>
 					</tr>
 				</thead>
 				<tbody class="processN">
 					<tr th:each="r : ${kongjungList}">
 						<td scope="row">
 							<input class="form-check-input" type="checkbox" name="checkbox2"
-								onclick="checkSelectAll(this)" id="checkbox1">
+								onclick="checkSelectAll(this)" id="checkbox2">
 						</td>
-						<td onclick="location.href='/kongjung_update'">[[${r.processNum}]]</td>
+						<td><a id="pnum" th:href="@{/kongjung/kongupdate/{p_num}(p_num=${r.processNum})}">[[${ r.processNum}]]</a></td>
 						<td>[[${r.processName}]]</td>
+						<td><svg></svg></td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 		<div id="btn">
-			<button id="btn_delete" style="float: left" onclick="deleteSelected()">선택 삭제</button>
+			<button id="btn_delete" style="float: left">선택 삭제</button>
 			<button id="btn_insert" onclick="location.href='kongjung_insert'" style="float: right">등록</button>
-			<button id="btn_update" onclick="location.href='kongjung_update'" style="float: right">수정</button>
 		</div>
 	</div>
 </body>
 
 <script>
-
+ 
 	function checkSelectAll(checkbox) {
 		const selectall
 			= document.querySelector('input[name="selectall"]');

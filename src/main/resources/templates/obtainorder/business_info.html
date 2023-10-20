@@ -1,106 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/obtainorder/business_info.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/obtainorder/business_info.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
-    function delete_business(){
+	function search_business() {
+		currentPage = 0;
+		showPage(currentPage);
+		let data = `kind=${$("#sel_kind").val()}&search=${$(".txt_search").val()}`;
 		$.ajax({
-			url : '/business/delete/'+$(this).parent().parent().children().first().text(),
-			type : 'post',
-			dataType : 'json',
-			success:(r)=>{
-				if(Number(r.count) == 0){
-					alert(r.message);
-					location.reload();
-				}else{
-					alert(r.message);
-					console.log($(this).parent().parent());
-					$(this).parent().parent().remove();
-				}				
+			url: "/business/search",
+			data: data,
+			dataType: "json",
+			type: "post",
+			success: function (r) {
+				var tag = "";
+
+				if (r.length === 0) {
+					tag = "<tr><td colspan='9'>일치하는 사용자 정보가 없습니다.<td></tr>";
+					$(".bodyClass").html(tag);
+				} else {
+					for (i = 0; i < r.length; i++) {
+						tag += `<tr>`;
+						tag += `<td><input type="checkbox" class="check_one"></td>`;
+						tag += `<td id="number">${i+1}</td>`;
+						tag += `<td>${r[i].cNum}</td>`;
+						tag += `<td>${r[i].sName}</td>`;
+						tag += `<td>${r[i].cLeader}</td>`;
+						tag += `<td>${r[i].cTel}</td>`;
+						tag += `<td>${r[i].cPhone}</td>`;
+						tag += `<td>${r[i].cFax}</td>`;
+						tag += `<td>${r[i].cMail}</td>`;
+						tag += `</tr>`;
+					}
+
+					$(".bodyClass").html(tag);
+				}
 			}
 		});
 	}
-	function search_business(){
-		
+	//행 지우기
+	function delete_business() {
+		var checkedItems = $('.check_one:checked');
+
+		if (checkedItems.length === 0) {
+			alert("선택된 항목이 없습니다.");
+		} else {
+			if (confirm('선택한 항목을 삭제하시겠습니까?')) {
+				var cNums = [];
+				checkedItems.each(function () {
+					cNum = $(this).parent().parent().find('td:eq(2)').text();
+					cNums.push(cNum);
+				});
+				console.log(cNums);
+				$.ajax({
+					data: {'cNum': cNums},
+					url: '/business/delete',
+					type: 'post',
+					dataType: 'json',
+					success: function (r) {
+						if (Number(r.count) == 0) {
+							alert(r.message);
+							location.reload();
+						} else {
+							alert(r.message);
+
+							// 체크된 항목 삭제
+							checkedItems.closest('tr').remove();
+						}
+					},
+					error: function () {
+						alert('서버 오류');
+					}
+				});
+			};
 		}
-     $(document).ready(function() {
-        function updateCount() {
-            var infoCount = $('.info').length;
-            $('.count').text(infoCount);
-        }
+	}
+	$(function () {
+		$('.check_all').click(function () {
+			$('.check_one').prop('checked', this.checked);
+		});
+		$('.btn_search').click(search_business);
+		$('.btn_delete').click(delete_business);
+		$('.btn_upload').click(function () {
+			window.location.href = "/BusinessInfoUpload";
+		});
+		$('.info td:not(:first-child)').click(function () {
+			var cNum = $(this).closest('tr').find('td:nth-child(3)').text();
+			window.location.href = `/BusinessInfoModi?cNum=${cNum}`;
+		});
 
-        updateCount();
-
-        $('.check_all').click(function() {
-            $('.check_one').prop('checked', this.checked);
-        });
-
-    });
-$(function(){
-	$('.btn_upload').click(function(){
-		window.location.href = "/BusinessInfoUpload";
+		//페이지 뷰
+		showPage(currentPage);
+		updatePageButtons();
 	});
-});
 </script>
+
 <body>
-    <div class="All">
-        <div class="header">
-            <a href="/mainpage">
-            	<img src="/img/home.png" alt="" class="source" id="home">
-            </a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">수주관리</a>
-            <img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
-            <a href="#" class="source" id="headText">고객업체 정보</a>
-        </div>
-        <h1>고객업체 정보</h1>
-        <p class="inquire"><span class="count">{$($.btn_search).length}</span>의 데이터가 조회되었습니다.</p>
-    <div class="business_search">
-		<select id="sel_kind" style="margin-right: 5px; border-color: #F08080; flex-shrink: 0; border-radius: 4px;">
-			<option value="c_code">고객업체코드</option>
-			<option value="s_num">고객업체명</option>
-			<option value="c_leader">대표자명</option>
-			<option value="c_tel">전화번호</option>
-			<option value="c_phone">휴대폰 번호</option>
-		</select>
-        <img src="/img/search_icon.png" alt="" id="img_search">
-        <input type="text" class="txt_search">
-        <button class="btn_search">검색</button>
-    </div>
-    <table id="search_result">
-        <tr>
-            <th><input type="checkbox" class="check_all"></th>
-            <th>번호</th>
-            <th>고객업체 코드</th>
-            <th>고객업체명</th>
-            <th>대표자명</th>
-            <th>전화번호</th>
-            <th>휴대폰 번호</th>
-            <th>FAX</th>
-            <th>이메일</th>
-        </tr>
-        <tr id="info" th:each="sell : ${list}">
-            <td><input type="checkbox" class="check_one"></td>
-            <td>[[${sell.cNum}]]</td>
-            <td>[[${sell.cCode}]]</td>
-            <td>[[${sell.sName}]]</td>
-            <td>[[${sell.cLeader}]]</td>
-            <td>[[${sell.cTel}]]</td>
-            <td>[[${sell.cPhone}]]</td>
-            <td>[[${sell.cFax}]]</td>
-            <td>[[${sell.cMail}]]</td>
-        </tr>
-    </table>
-    <div class="btn_area">
-        <button value="button" class="btn_delete">삭제</button>
-        <button value="button" class="btn_upload">등록</button>
-    </div>
-    </div>
+	<th:block th:insert="header/header.html"></th:block>
+	<div class="All">
+		<div class="obtainheader">
+			<a href="/mainpage">
+				<img src="/img/home.png" alt="" class="source" id="home">
+			</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/BusinessInfo" class="source" id="headText">수주관리</a>
+			<img src="/img/arrow_right_pink.png" alt="" class="source" id="arrow">
+			<a href="/BusinessInfo" class="source" id="headText">고객업체 정보</a>
+		</div>
+		<h2>고객업체 정보</h2>
+		<p class="inquire"><span class="count">[[${countAllOrderCompany}]]</span>의 데이터가 조회되었습니다.</p>
+		<div class="business_search">
+			<select id="sel_kind" style="margin-right: 5px; border-color: #F08080; flex-shrink: 0; border-radius: 4px;">
+				<option value="c_num">고객업체코드</option>
+				<option value="s_name">고객업체명</option>
+				<option value="c_leader">대표자명</option>
+				<option value="c_tel">전화번호</option>
+				<option value="c_phone">휴대폰 번호</option>
+			</select>
+			<img src="/img/search_icon.png" alt="" id="img_search">
+			<input type="text" class="txt_search">
+			<button class="btn_search">검색</button>
+		</div>
+		<table id="search_result">
+			<thead>
+				<tr>
+					<th><input type="checkbox" class="check_all"></th>
+					<th>번호</th>
+					<th>고객업체 코드</th>
+					<th>고객업체명</th>
+					<th>대표자명</th>
+					<th>전화번호</th>
+					<th>휴대폰 번호</th>
+					<th>FAX</th>
+					<th>이메일</th>
+				</tr>
+			</thead>
+			<tbody class="bodyClass">
+				<tr class="info" th:each="sell : ${list}">
+					<td><input type="checkbox" class="check_one"></td>
+					<td id="number">${i+1}</td>
+					<td>[[${sell.cNum}]]</td>
+					<td>[[${sell.sName}]]</td>
+					<td>[[${sell.cLeader}]]</td>
+					<td>[[${sell.cTel}]]</td>
+					<td>[[${sell.cPhone}]]</td>
+					<td>[[${sell.cFax}]]</td>
+					<td>[[${sell.cMail}]]</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="12">
+						<button id="prevPage">이전 페이지</button>
+						<button id="nextPage">다음 페이지</button>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div class="btn_area">
+			<button value="button" class="btn_delete">삭제</button>
+			<button value="button" class="btn_upload">등록</button>
+		</div>
+	</div>
 </body>
+<script>
+	// 페이지 설정
+	let currentPage = 0; // 현재 페이지 번호를 저장할 변수 추가
+	const boards = document.querySelectorAll('.info');
+	const prevPageButton = document.getElementById('prevPage');
+	const nextPageButton = document.getElementById('nextPage');
+	const boardsPerPage = 10;
+
+	function showPage(page) {
+		boards.forEach((board, index) => {
+			if (index >= page * boardsPerPage && index < (page + 1) * boardsPerPage) {
+				board.style.display = 'table-row';
+			} else {
+				board.style.display = 'none';
+			}
+		});
+	}
+
+	function updatePageButtons() {
+		if (currentPage === 0) {
+			prevPageButton.disabled = true;
+		} else {
+			prevPageButton.disabled = false;
+		}
+
+		if (currentPage === Math.ceil(boards.length / boardsPerPage) - 1) {
+			nextPageButton.disabled = true;
+		} else {
+			nextPageButton.disabled = false;
+		}
+	}
+
+	prevPageButton.addEventListener('click', () => {
+		if (currentPage > 0) {
+			currentPage--;
+			showPage(currentPage);
+			updatePageButtons();
+		}
+	});
+
+	nextPageButton.addEventListener('click', () => {
+		if (currentPage < Math.ceil(boards.length / boardsPerPage) - 1) {
+			currentPage++;
+			showPage(currentPage);
+			updatePageButtons();
+		}
+	});
+	//번호 컬럼에 숫자를 순서대로 넣기
+	const infoRows = document.querySelectorAll('.info');
+	infoRows.forEach((row, index) => {
+		const numberCell = row.querySelector('#number');
+		numberCell.textContent = index + 1;
+	});
+</script>
 </html>

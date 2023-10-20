@@ -108,6 +108,12 @@ textarea {
   margin: 0;
   text-align: center;
 }
+#table4 > tbody > tr > td {
+  border: 1px solid #242424;
+  height: 30px;
+  margin: 0;
+  text-align: center;
+}
 ul,
 li {
   float: left;

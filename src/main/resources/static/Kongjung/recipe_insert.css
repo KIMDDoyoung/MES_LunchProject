@@ -78,3 +78,18 @@ li {
    text-decoration: none;
    color: #fff;
 }
+#recipeNum{
+		width:1100px;
+		height: 100px;
+		font-size: large;
+}
+#processTime{
+		width:1100px;
+		height: 100px;
+		font-size: large;
+}
+#processNo{
+		width:1100px;
+		height: 200px;
+		font-size: large;
+}

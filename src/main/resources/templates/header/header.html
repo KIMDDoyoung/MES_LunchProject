@@ -6,13 +6,13 @@
 	<title>Insert title here</title>
 	<link rel="stylesheet" href="/header/header.css">
 </head>
+<body>
 	<th:block th:if="${session.user == null}">
 		<script>
 			alert("로그인을 하셔야 이용할수 있습니다.");
 			location.href = "/";
 		</script>
 	</th:block>
-<body>
 	<div class="header">
 		<table>
 			<tr>
@@ -20,7 +20,7 @@
 				<td><a href="/mainpage"><img src="/img/logo5.png" alt="로고" class="logo2"></a></td>
 				<td>
 					<ul class="menu">
-						<li class="bar"><a href="/Order">발주관리<img src="/img/down.png" alt="" class="arrow"></a>
+						<li class="bar"><a href="Order">발주관리<img src="/img/down.png" alt="" class="arrow"></a>
 							<ul class="submenu">
 								<li><a href="/Order">발주 관리</a></li>
 								<li><a href="/MaterialInfo">원부재료 관리</a></li>
@@ -59,8 +59,7 @@
 							</ul>
 						</li>
 						<ul>
-							<li id="hello"><p style="text-decoration: underline;"><th:block th:if="${session.user != null}">[[${session.user.name}]] 님 </th:block></p>안녕하세요</li>
-		
+							<li id="hello"><p style="text-decoration: underline;"><th:block th:if="${session.user != null}">[[${session.user.name}]] 님</th:block></p> 안녕하세요</li>
 					<li class="logout"><a href="/logout"  style="text-decoration:none;color: white;" />로그아웃</li>
 					</ul>
 				</td>

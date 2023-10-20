@@ -1,0 +1,160 @@
+/* 노말라이즈 */
+body, ul, li {
+    padding:0;
+    margin:0;
+    list-style:none;
+}
+a {
+    text-decoration:none;
+    color:inherit;
+}
+/* 노말라이즈 끝 */
+
+/* 라이브러리 */
+/* 상단바 */
+.mobile-top-bar {
+width: 100%;
+	height: 100px;
+	background-color: #ffbebe;
+	position: absolute;
+	font-family: 'Noto Sans KR', sans-serif;
+    z-index:100;
+}
+.mobile-top-bar > .logo {
+    text-align:center;
+    color:white;
+    font-weight:bold;
+    font-size:1.5rem;
+}
+
+/* 토글 사이드바 버튼 아이콘 */
+.ico {
+    position:absolute;
+    top:50%;
+    left:8px;
+    width:70px;
+    height:50px;
+    transform:translatey(-50%);
+    cursor:pointer;
+}
+.ico > div {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:20%;
+    background-color:white;
+}
+.ico > div:nth-child(2) {
+    top:40%;
+    transition:visibility 0s .15s;
+}
+.ico.active > div:nth-child(2) {
+    visibility:hidden;
+    transition:visibility 0s;
+}
+.ico > div:nth-child(3) {
+    top:80%;
+}
+.ico > div:nth-child(1), .ico > div:nth-child(3) {
+    transition:top .15s .15s, transform .15s;
+}
+.ico.active > div:nth-child(1), .ico.active > div:nth-child(3) {
+    top:40%;
+    transform:rotate(45deg);
+    transition:top .15s, transform .15s .15s;
+}
+.ico.active > div:nth-child(3) {
+    transform:rotate(-45deg);
+}
+
+/* 아이콘 색 변화 */
+.ico[data-ico-now-animating="Y"] > div {
+    background-color:red;
+}
+/* 라이브러리 끝 */
+
+/* 커스텀 */
+/* 좌측 사이드 바 */
+/* 좌측 사이드바 배경 */
+.left-side-bar-box {
+	z-index: 99;
+    position:absolute;
+    top:0;
+    left:0;
+    width:600px;
+    height:100%;
+    background-color:rgba(0,0,0,0);
+    visibility:hidden;
+    transition:visibility .2s, background-color .2s;
+}
+.left-side-bar-box.active {
+    background-color:rgba(0,0,0,0.5);
+    visibility:visible;
+}
+
+/* 좌측 사이드바 */
+.left-side-bar {
+	z-index: 0;
+    position:absolute;
+    top:100px;
+    left:-250px;
+    width:100%;
+    height:100%;
+    background-color:#efefef ;
+    transition:left .5s;
+}
+.left-side-bar-box.active > .left-side-bar {
+    left:0;
+}
+.left-side-bar >ul{
+	margin: 20px;
+}
+.left-side-bar > .menu-1 ul > li > a {
+    display:block;
+    padding:15px;
+    padding-top: 20px;
+        font-size: 25px;
+
+}
+.left-side-bar > .menu-1 ul > li:hover > a {
+    font-size: 25px;
+    text-decoration: underline black;
+}
+/* 혼자가 아닌 a 에 +를 붙혀준다 */
+.left-side-bar > .menu-1 ul > li > a:not(:only-child)::after {
+    content:"▼" ;
+    color: #ffbebe;
+    font-size: 15px;
+    float:right;
+}
+/* 엑티브가 있는 메뉴(펼쳐진 메뉴)에 a에 - 를 붙혀준다 */
+.left-side-bar > .menu-1 ul > li.active > a:not(:only-child)::after {
+    content:"-";
+}
+.left-side-bar > .menu-1 > ul ul {
+    display:none;
+    background-color:#ffbebe;
+    color: #efefef;
+    font-weight: bold;
+}
+.left-side-bar > .menu-1 ul > li.active > ul {
+    display:block;
+    font-size: 20px;
+
+}
+
+.menu-1 > ul > li > a::after{
+	display: none;
+}
+menu-1> ul> #ch22,#ch11,#ch33,#ch44,#ch55,#ch66 {
+width: 100%;
+font-size: 50px;
+padding-top: 50px ;
+}
+#ch22{
+	padding-top: 50px;
+	width: 100%;
+	font-size: 50px;
+}
+

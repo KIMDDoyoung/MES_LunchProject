@@ -7,6 +7,110 @@
     <link rel="stylesheet" href="common/header.css">
     <link rel="stylesheet" href="/order/material_register.css">
 </head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+	function openConstractorPopUp() {
+		$('#btn_search').click();
+		$(".driverpopBg1").show();
+	}
+	function closeConstractorPopUp() {
+		$(".driverpopBg1").hide();
+	}
+	$(function () {
+		//btn_search 클릭시 실행될 함수(협력업체 검색)
+		$('#btn_search').click(function () {
+			//controller에서 선언한 kind값은 html의 kind /search동일
+			let data = {
+				kind: $("#kind").val(),
+				search: $("#search").val()
+			}
+			console.log(data);
+			$.ajax({
+				url: '/pop/constractorlist',
+				data: data,
+				type: 'post',
+				dataType: 'json',
+				success: function (r) {
+					console.log(r);
+					var tag = "";
+
+					if (r.length === 0) {
+						tag = "<tr><td colspan=2'>등록된 협력업체 정보가 없습니다.<td></tr>";
+						$('#constractor_data').html(tag);
+					} else {
+
+						for (let i = 0; i < r.length; i++) {
+							tag += `<tr>`;
+							tag += `<td class="constractor1">${r[i].companyNo}</td>`;
+							tag += `<td>${r[i].buyName}</td>`;
+							tag += `</tr>`;
+						}
+						console.log(tag)
+						$('#constractor_data').html(tag);
+
+						//td 코드 클릭시 해당 값이 기사번호에 기록
+						$('#constractor_data tr').on('click', function () {
+							// 클릭된 td 요소에서 dNum 값을 가져옴
+							// td리스트를 tr로 선택될 수 있게 해서 해당 값 클릭될 수 있도록함
+							let companyNoValue = $(this).children().first().text();
+
+							// 검색 input에 클릭한 td 값을 자동으로 입력
+							$("#companyNo").val(companyNoValue);
+							console.log($("#companyNo"));
+							console.log(companyNoValue);
+
+							// driverpopBg를 숨깁니다.
+							$(".driverpopBg1").hide();
+						});
+					}
+				}
+			})
+		})
+		//기사 조회버튼 클릭시 기사리스트 보여지도록 처리
+		$('#opendriverlist').click(function () {
+			$.ajax({
+				url: '/pop/constractorlist',
+				type: 'post',
+				dataType: 'json',
+				success: function (r) {
+					console.log(r);
+					var tag = "";
+
+					if (r.length === 0) {
+						tag = "<tr><td colspan=2'>등록된 협력업체 정보가 없습니다.<td></tr>";
+						$('#constractor_data').html(tag);
+					} else {
+
+						for (let i = 0; i < r.length; i++) {
+							tag += `<tr>`;
+							tag += `<td class="constractor1";>${r[i].companyNo}</td>`;
+							tag += `<td>${r[i].buyName}</td>`;
+							tag += `</tr>`;
+						}
+						console.log(tag)
+						$('#constractor_data').html(tag);
+
+						//td 코드 클릭시 해당 값이 기사번호에 기록
+						$('#constractor_data tr').on('click', function () {
+							// 클릭된 td 요소에서 dNum 값을 가져옴
+							// td리스트를 tr로 선택될 수 있게 해서 해당 값 클릭될 수 있도록함
+							let companyNoValue = $(this).children().first().text();
+
+							// driverpopBg를 숨깁니다.
+							$(".driverpopBg1").hide();
+							
+							// 검색 input에 클릭한 td 값을 자동으로 입력
+							$("#companyNo").val(companyNoValue);
+							console.log(companyNoValue);
+
+						});
+					}
+				}
+			})
+		})
+	});
+</script>
+
 <body>
 	<th:block th:include="header/header.html"></th:block>
         <!-- 원부재료등록 -->
@@ -40,105 +144,50 @@
                 </ul>
                 <!--lnb -->
                 <h2 class="sub_tit">원부재료 등록</h2>
-                <form method="post" class="editBox">
-                    <div class="uploadImg">
-                        <div class="showImg">
-
-                        </div>
-                        <div class="uploadBtn">
-                            <input type="file" name="" id="searchFileBtn">
-                        </div>
-                    </div>
+                <form method="post" class="editBox" id="materialRegisterForm" action="/material/register/action">
                     <div class="materialInfoBox">
                         <table class="info">
-                            <tr>
-                                <th>제품번호<span>*</span></th>
+                            <tr style="display: none;">
+                                <th>발주번호</th>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" id="buyNo" name="buyNo" placeholder="발주번호">
                                 </td>
                             </tr>
                             <tr>
-                                <th>제품명<span>*</span></th>
+                                <th>재료번호<span>*</span></th>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" id="materialNo" name="materialNo" placeholder="재료번호" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>재료명<span>*</span></th>
+                                <td>
+                                    <input type="text" id="materioalName" name="materioalName" placeholder="제품명" required>
                                 </td>
                             </tr>
                             <tr>
                                 <th>규격</th>
                                 <td>
-                                    <input type="text">
+                                    <input type="text" id="mUnit" name="mUnit" placeholder="g, kg, mg, ea">
                                 </td>
                             </tr>
                             <tr>
                                 <th>BOX당 수량<span>*</span></th>
                                 <td>
-                                    <input type="text">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>BOX 표시단위</th>
-                                <td>
-                                    <select name="weight" id="">
-                                        <option value="1MT">1MT</option>
-                                        <option value="25kg">25kg</option>
-                                        <option value="1kg">1kg</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>가격</th>
-                                <td>
-                                    <input type="text">
+                                    <input type="text" id="mBOXcount" name="mBOXcount" placeholder="BOX당 수량" required>
                                 </td>
                             </tr>
                             <tr>
                                 <th>협력업체</th>
                                 <td class="coworks">
-                                    <input type="text"><br>
-                                    <input type="text"><br>
-                                    <input type="text">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>원산지</th>
-                                <td>
-                                    <input type="text">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>유통기한<span>*</span></th>
-                                <td>
-                                    <input type="text">
-                                    <select name="period" id="">
-                                        <option value="year">년</option>
-                                        <option value="month">월</option>
-                                        <option value="day">일</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>진열순서</th>
-                                <td>
-                                    <input type="text">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>구분</th>
-                                <td>
-                                    <label for="raw">
-                                        <input type="radio" id="raw" name="ingredient" value="raw" checked>
-                                        원재료
-                                    </label>
-                                    <label for="sub">
-                                        <input type="radio" id="sub" name="ingredient" value="sub">
-                                        부재료
-                                    </label>
+                                    <input type="text" class="comNo"  id="companyNo" name="companyNo" placeholder="협력업체 사업자번호" readonly>
+                                   	<button type="button" id="openConstractorlist" onclick="openConstractorPopUp()">조회</button>
                                 </td>
                             </tr>
                         </table>
                         <div class="buttonBox">
                             <input type="reset" value="취소">
-                            <input type="submit" value="수정">	
+                            <input type="submit" value="등록">	
                         </div>
                     </div>
                 </form>
@@ -147,21 +196,32 @@
         </div>
     </div>
 
-    <script>
-        const rawRadio = document.getElementById('raw');
-        const subRadio = document.getElementById('sub');
-    
-        rawRadio.addEventListener('change', () => {
-            if (rawRadio.checked) {
-                subRadio.checked = false;
-            }
-        });
-    
-        subRadio.addEventListener('change', () => {
-            if (subRadio.checked) {
-                rawRadio.checked = false;
-            }
-        });
-    </script>
+	<!--driverlist popup-->
+	<div class="driverpopBg1">
+		<div class="conpopcon" style="width: 300px;">
+			<span class="close" onclick="closeConstractorPopUp()" style="width: 40px;">×</a></span>
+			<br>
+			<h3>협력업체 리스트</h3>
+			<div>
+				<select id="kind">
+					<option value="companyNo">사업자번호</option>
+					<option value="buyName">업체명</option>
+				</select>
+				<input type="text" placeholder="검색" style="width: 150px;" id="search">
+				<button id="btn_search">검색</button>
+			</div>
+			<br>
+			<br>
+			<table id="constractor_list">
+				<thead>
+					<th style="width: 100px">사업자번호</th>
+					<th style="width: 200px">업체명</th>
+				</thead>
+				<tbody id="constractor_data">
+					<!--td값은 ajax로 받아오기에 비워둬도 상관x-->
+				</tbody>
+			</table>
+		</div>
+	</div>
 </body>
 </html>

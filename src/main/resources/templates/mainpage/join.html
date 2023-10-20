@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>회원가입</title>
+<link rel="stylesheet" href="/mainpage/join.css">
+<script>
+    $(document).ready(function() {
+        let isIdAvailable = false; // 아이디 사용 가능 여부를 저장하는 변수
+
+        function updateSubmitButtonState() {
+            let submitButton = $("button.send")[0]; // 완료 버튼 엘리먼트
+
+            if (isIdAvailable && checkPass() && checkPartNo()) { 
+                submitButton.disabled = false; // 모든 조건이 충족되면 버튼 활성화
+            } else {
+                submitButton.disabled = true; // 조건이 충족되지 않으면 버튼 비활성화
+            }
+        }
+
+        function checkId() {
+            let id = $("#userId")[0];
+            let id_result = $(".id_result")[0];
+            let regExp = /^[a-z0-9]{6,15}$/; // 영소문자와 숫자만 허용하는 정규식
+
+            if (id.value.length < 6 || id.value.length > 15) {
+                id_result.innerHTML = "글자수는 6~15글자 사이로 입력해주세요.";
+                id_result.classList.remove("true");
+                id_result.classList.add("false");
+                isIdAvailable = false;
+            } else if (!regExp.test(id.value)) {
+                id_result.innerHTML = "영소문자와 숫자만 입력할 수 있습니다.";
+                id_result.classList.remove("true");
+                id_result.classList.add("false");
+                isIdAvailable = false;
+            } else {
+                var $mid = $("#userId");
+                $.ajax({
+                    type: "POST",
+                    url: "/join/checkid",
+                    data: {
+                        "type": "user",
+                        "id": $mid.val()
+                    },
+                    success: function(data) {
+                        if (data != "0") { // 1이면 중복
+                            $(".id_result").html("<span id='check'>이미 존재하는 아이디입니다</span>");
+                            $("#check").css({
+                                "color": "#FA3E3E",
+                                "font-weight": "bold",
+                                "font-size": "10px"
+                            });
+                            isIdAvailable = false;
+                        } else { // 아니면 중복아님
+                            $(".id_result").html("<span id='check'>사용가능한 아이디입니다</span>");
+                            $("#check").css({
+                                "color": "#0D6EFD",
+                                "font-weight": "bold",
+                                "font-size": "10px"
+                            });
+                            isIdAvailable = true; // 아이디 사용 가능
+                        }
+                        updateSubmitButtonState(); // 중복 여부 확인 이후에도 버튼 상태 갱신
+                    }
+                });
+            }
+            updateSubmitButtonState(); // 아이디 체크 후 버튼 상태 갱신
+        }
+
+        function checkPass(){
+          let pass = document.querySelector("#passwd");
+            let pass_chk = document.querySelector("#pwCheck");
+            let pass_result = document.querySelector(".pass_result");
+
+            //정규식으로 암호 형식 체크
+            let reg = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&])[A-Za-z\d!@#$%^&]{6,15}$/;
+            if(!reg.test(pass.value)){
+                pass_result.innerHTML = "암호는 6~15글자 사이의 영문 대소문자, 숫자, 특수문자를 모두 포함해야 합니다.";
+                pass_result.classList.remove("true");
+                pass_result.classList.add("false");
+                return false;
+            }
+            
+            //두번 입력한 암호가 서로 일치하는지?
+            if(pass.value != pass_chk.value){
+                pass_result.innerHTML = "입력한 암호가 서로 일치하지 않습니다.";
+                pass_result.classList.remove("true");
+                pass_result.classList.add("false");
+                return false;
+            }
+            pass_result.innerHTML = "암호가 일치합니다.";
+            pass_result.classList.remove("false");
+            pass_result.classList.add("true");
+            return true;
+    }
+
+        function checkPartNo() {
+        let partno = document.querySelector("#partno");
+        let partno_result = document.querySelector(".partno_result");
+        var regPartno = /^[a-z0-9]{8}$/;
+        if (!regPhone.test(partno.value)) {
+         partno_result.innerHTML = "올바른 부서 번호의 형식이 아닙니다.";
+         partno_result.classList.remove("true");
+         partno_result.classList.add("false");
+        return false;
+        }
+        partno_result.innerHTML = "";
+        partno_result.classList.remove("false");
+        partno_result.classList.add("true");
+        return true;
+	}
+
+        $("#userId").on("keyup", checkId);
+        $("#passwd").on("keyup", checkPass);
+        $("#userPasswdCheck").on("keyup", checkPass);
+        $("#partno").on("keyup", checkPartNo);
+
+        // 폼 제출 전 최종 데이터 체크
+     $("#frm").on("submit", function(e) {
+            if (!isIdAvailable || !checkPass() || !checkPartNo()) {
+                e.preventDefault(); // 어느 하나라도 조건이 충족되지 않으면 폼 제출 막음
+            }
+        });
+    });
+</script>
+</head>
+<body>
+
+	 <div class="joinTable"> 
+    <div class="userInput">
+        <form id="frm" action="/join/action" method="post">
+            <fieldset>
+                <legend><img src="/img/logo4.png" class="title"></legend>
+                <div class="uid">
+                    <label for="userId">아이디</label>
+                    <input type="text" id="userId" name="Id" maxlength="15" minlength="6" class="check" placeholder="아이디 입력" required>
+                    <li class="id_result"></li>
+                </div>
+                <div class="form-group">
+                        <label for="Pw">패스워드</label>
+                        <input type="password" id="passwd" name="pw" maxlength="12" minlength="6" class="check" placeholder="패스워드 입력" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPasswdCheck">패스워드 확인</label>
+                        <input type="password" id="userPasswdCheck"  maxlength="12" minlength="6" class="check" placeholder="패스워드 확인" required>
+                        <li class="pass_result"></li>
+                    </div>
+                    <div class="form-group">
+                        <label for="partno">부서 번호</label>
+                        <input type="text" id="partno" name="partno" maxlength="8" class="check" placeholder="부서 번호를 입력하세요" required>
+                         <li class="partno_result"></li>
+                    </div>
+                     <div class="form-group">
+                        <label for="name">이름</label>
+                        <input type="text" id="name" name="name" maxlength="10" class="check" placeholder="부서명/이름 입력" required>
+                  
+                    </div>
+                    <button class="send" type="submit">완료</button>
+                </fieldset>
+        </form>        
+            </div>
+    </div>
+
+</body>
+</html>

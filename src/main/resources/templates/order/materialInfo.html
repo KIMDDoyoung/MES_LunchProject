@@ -8,8 +8,28 @@
     <link rel="stylesheet" href="/order/materialInfo.css">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/JsBarcode.code128.min.js"></script>
 <script>
 	$(function () {
+		
+		//바코드 전체 출력하는 함수
+	function printAllBarcode() {
+		//consignment_data class의 tr 지정
+		let row = $(".consignment_data tr");
+
+		$(row).each(function (idx, obj) {
+			//tr의 자녀 속성인 td중 1번째인 출하코드 선택
+			console.log($(obj).children("td").eq(1).text());
+			let barcodeValue = $(obj).children("td").eq(1).text();
+			//td중 마지막 속성의 자녀 속성인 svg에 0번째 선택
+			JsBarcode($(obj).children("td").last().children("svg")[0], barcodeValue, {
+				//바코드 크기
+				format: "CODE128", width: 1,
+				height: 20
+			});
+		});
+	}
+		
 	//문자열 검사
     $('.btn_search').click(function () {
 
@@ -40,7 +60,7 @@
                         tag += `<td>${r[i].mUnit}</td>`;
                          tag += `<td>${r[i].mTotalPrice}</td>`;
                         tag += `<td>${r[i].buyName}</td>`;
-                        tag += `<td>༼ つ ◕_◕ ༽つ</td>`;
+                        tag += `<td><svg></svg></td>`;
                         tag += `</tr>`;
                     }
                     $('.materialList').html(tag);
@@ -91,7 +111,7 @@
                         }
                     },
                     error: function () {
-                        alert('서버 오류');
+                        window.location.href = '/MaterialInfo';
                     }
                 });
             });
@@ -150,11 +170,11 @@
                                 <th>재료번호</th>
                                 <th>제품명</th>
                                 <th>BOX당 수량</th>
-                                <th>발주일자</th>
+                                <th style="display: none;">발주일자</th>
                                 <th>단위</th>
-                                <th>가격(원)</th>
-                                <th>협력업체</th>
-                                <th>바코드</th>
+                                <th style="display: none;">가격(원)</th>
+                                <th style="display: none;">협력업체</th>
+                                <th>사업자번호</th>
                             </tr>
                         </thead>
                         <tbody class="materialList">
@@ -165,12 +185,11 @@
                                 <td>[[${material.materialNo}]]</td>
                                 <td>[[${material.materioalName}]]</td>
                                 <td>[[${material.mBOXcount}]]</td>
-                                <td>[[${material.dateOrder}]]</td>
+                                <td style="display: none;">[[${material.dateOrder}]]</td>
                                 <td>[[${material.mUnit}]]</td>
-                                <td>[[${material.mTotalPrice}]]</td>
-                                <td>[[${material.buyName}]]</td>
-                                <td>༼ つ ◕_◕ ༽つ</td>
-                                <td style="display: none;">[[${material.companyNo}]]</td>
+                                <td style="display: none;">[[${material.mTotalPrice}]]</td>
+                                <td style="display: none;">[[${material.buyName}]]
+                                <td>[[${material.companyNo}]]</td>
                             </tr>
                         </tbody>
                     </table>

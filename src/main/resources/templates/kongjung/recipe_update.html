@@ -8,11 +8,14 @@
 	<th:block th:include="header/header.html"></th:block>
 	<link rel="stylesheet" href="/Kongjung/recipe_update.css">
 	<link rel="stylesheet" href="/common/global.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 </head>
 
 <body>
 	<div id="container">
+		<form id="updateForm" method="post" action="/recipe_update/action">
 		<ul class="menu1" style="width: 1250px;">
 			<li>
 				<a href="/main.html">
@@ -41,18 +44,18 @@
 				<table class="table" border="2" width="1250px">
 					<thead>
 						<tr>
-							<th id="col">공정 번호</th>
-							<th></th>
+							<th id="col">레시피 코드</th>
+							<th><input type="text" id="recipeNum" name="recipeNum" style="float:left" required readonly></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							
-							<td id="col1">레시피 코드</td>
-							<td id="col2"></td>
+							<td id="col1">소요시간</td>
+							<td id="col2"><input type="text" id="processTime" name="processTime" style="float:left" required></td>
 						</tr>
 						<tr>
-							<td id="col3">레시피명 </td>
+							<td id="col3">레시피 설명 </td>
 							<td></td>
 						</tr>
 					</tbody>

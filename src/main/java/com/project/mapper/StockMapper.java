@@ -30,4 +30,12 @@ public interface StockMapper {
 
 	int UpdateProduct(Stock_ProductDTO dto);
 
+	List<Stock_MaterialDTO> SearchMaterial(String search);
+
+	List<Stock_ProductDTO> SearchProduct(String search);
+
+	int DeleteMaterial(String mNum);
+
+	int DeleteProduct(String pNum);
+
 }

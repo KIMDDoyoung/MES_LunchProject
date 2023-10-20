@@ -74,26 +74,35 @@ $(function () {
     } else {
         if (confirm('선택한 항목을 삭제하시겠습니까?')) {
             selectedItems.each(function () {
-                var companyNo = $(this).closest('tr').find('td:last-child').text();
+                var companyNo = $(this).closest('tr').find('td:nth-child(2)').text();
                 $.ajax({
                     url: '/contractor/delete/' + companyNo,
                     type: 'post',
-                    dataType: 'json',
                     success: function (response) {
                         if (response) {
                             alert(response.message);
                             $(this).closest('tr').remove();
+	                        alert('삭제 성공');
+
                         } else {
                             alert('삭제 실패');
                         }
                     },
                     error: function () {
-                        alert('서버 오류');
+						 window.location.href = '/Contractor';
                     }
                 });
             });
         }
     }
+});
+	$(function () {
+    // 해당 사업자번호를 클릭할 때 해당 열 데이터 넘김
+    $('.companyNo').click(function () {
+        var companyNo = $(this).closest('tr').find('.companyNo').text();
+		location.href=`/ContractorEdit?companyNo=${companyNo}`;
+
+    });
 });
 });
 </script>
@@ -146,7 +155,7 @@ $(function () {
                                 <th><input type="checkbox" name="chk_all"></th>
                                 <th>사업자번호</th>
                                 <th>협력업체명</th>
-                                <th>대표자명</th>
+                                <th>담당자명</th>
                                 <th>휴대폰번호</th>
                                 <th>이메일</th>
                             </tr>
@@ -156,11 +165,11 @@ $(function () {
                                 <td>
                                     <input type='checkbox' name='s_no'>
                                 </td>
-                                <td>[[${contractor.companyNo}]]</td>
-                                <td>[[${contractor.buyName}]]</td>
-                                <td>[[${contractor.managerName}]]</td>
-                                <td>[[${contractor.managerContact}]]</td>
-                                <td>[[${contractor.mMail}]]</td>
+                                <td class="companyNo">[[${contractor.companyNo}]]</td>
+                                <td class="buyName">[[${contractor.buyName}]]</td>
+                                <td class="managerName">[[${contractor.managerName}]]</td>
+                                <td class="managerContact">[[${contractor.managerContact}]]</td>
+                                <td class="mMail">[[${contractor.mMail}]]</td>
                             </tr>
                         </tbody>
                     </table>

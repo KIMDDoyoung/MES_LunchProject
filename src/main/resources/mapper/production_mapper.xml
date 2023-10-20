@@ -2,35 +2,73 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
 <mapper namespace="com.project.mapper.ProductionMapper">
 	<resultMap type="production" id="production">
 		<id column="P_NUM" property="pNum" />
-		<result column="P_ORDER_NUM" property="orderNum" />
+		<result column="PRODUCTION_NUM" property="productionNum" />
 		<result column="P_NAME" property="productName" />
 		<result column="C_NUM" property="cNum" />
-		<result column="DATE_REGISTER" property="dateRegister" />
-		<result column="DATE_FINISH" property="dateFinish" />
+		<result column="DATE_REGISTER" property="dateRegister"/>
+		<result column="DATE_FINISH" property="dateFinish"/>
 		<result column="PRODUCTION_AMOUNT" property="amount" />
 		<result column="PRICE" property="price" />
 		<result column="BOXCOUNT" property="boxCount" />
 		<result column="P_PHASE" property="phase" />
+		<result column="RECIPE_NUM" property="recipe_num" />
 	</resultMap>
+	
 	<select id="selectAll" resultMap="production">
-	select pr.P_NUM, pr.P_ORDER_NUM, p.P_NAME, s.C_NUM, pr.DATE_REGISTER,
+	select pr.P_NUM, pr.PRODUCTION_NUM, p.P_NAME, s.C_NUM, pr.DATE_REGISTER,
 	 pr.DATE_FINISH, pr.PRODUCTION_AMOUNT, s.PRICE, p.BOXCOUNT, pr.P_PHASE
 	from production pr, product p, sell s
 	where pr.P_NUM = p.P_NUM AND pr.P_NUM = s.P_NUM
 	</select>
 	<select id="selectProduction" parameterType="map" resultMap="production">
-	select pr.P_NUM, pr.P_ORDER_NUM, p.P_NAME, s.C_NUM, pr.DATE_REGISTER,
+	select pr.P_NUM, pr.PRODUCTION_NUM, p.P_NAME, s.C_NUM, pr.DATE_REGISTER,
 	 pr.DATE_FINISH, pr.PRODUCTION_AMOUNT, s.PRICE, p.BOXCOUNT, pr.P_PHASE
 	from production pr, product p, sell s
 	where (pr.P_NUM = p.P_NUM AND pr.P_NUM = s.P_NUM) AND (pr.P_NUM LIKE '%' || #{search} || '%')
 	</select>
-	<insert id="register" parameterType="String">
-	insert into PRODUCTION
-	values(#{productNum}, #{pNum}, #{dateRegister}, #{dateFinish},
-		#{amount}, #{phase},#{orderNum})
+	<select id="selectDate" parameterType="map" resultMap="production">
+	select pr.P_NUM, pr.PRODUCTION_NUM, p.P_NAME, s.C_NUM, pr.DATE_REGISTER,
+	 pr.DATE_FINISH, pr.PRODUCTION_AMOUNT, s.PRICE, p.BOXCOUNT, pr.P_PHASE
+	from production pr, product p, sell s
+	where (pr.P_NUM = p.P_NUM AND pr.P_NUM = s.P_NUM) AND
+	pr.DATE_REGISTER >= TO_DATE(#{startDate, jdbcType=DATE},'YYYY-MM-DD') AND 
+ 	TO_DATE(#{endDate, jdbcType=DATE},'YYYY-MM-DD') >= pr.DATE_FINISH  ORDER BY pr.DATE_REGISTER ASC
+	</select>
+	
+	<insert id="insertProduct" parameterType="production">
+    insert into product (P_NUM, P_NAME, P_AMOUNT, RECIPE_NUM, P_SIZE, BOXCOUNT, WEIGHT, DATE_FINISH, UNIT, WEIGHT_1, P_PRICE)
+    values(#{pNum}, #{productName}, null, #{recipe_num}, null , #{boxCount}, null, null, null, null, null)
+	</insert>						<!-- recipe_num(p키) 에러 질문사항 -->
+	
+	<insert id="insertProduction" parameterType="production">
+    insert into production (PRODUCTION_NUM, P_NUM, DATE_REGISTER, DATE_FINISH, PRODUCTION_AMOUNT, P_PHASE)
+    values( #{productionNum}, #{pNum}, #{dateRegister}, #{dateFinish}, #{amount}, #{phase})
+	</insert>
+
+	<insert id="insertSell" parameterType="production">
+    insert into sell (S_NUM, S_PHASE, S_AMOUNT, C_NUM, PRICE, P_NUM, DATE_ORDER, DATE_START_SHIP, DATE_TO_ARRIVE)
+    values(null, null, null, #{cNum}, #{price}, null, null, null, null)
 	</insert>
 	
+	<delete id="deleteProduction" parameterType="list">
+		delete from production where p_num in
+		<foreach collection="list" item="obj" open="(" close=")" separator=",">#{obj}</foreach>
+	</delete>
+	
+	<update id="productModify" parameterType="production">
+		UPDATE product SET P_NUM = #{pNum}, 
+		P_NAME = #{productName}, BOXCOUNT = #{boxCount}
+	</update>
+	<update id="productionModify" parameterType="production">
+		UPDATE production SET PRODUCTION_NUM = #{productionNum}, 
+		P_NUM = #{pNum}, DATE_REGISTER = #{dateRegister}, DATE_FINISH = #{dateFinish}  PRODUCTION_AMOUNT m_num = #{amount},
+		P_PHASE = #{phase}
+	</update>
+	<update id="sellModify" parameterType="production">
+		UPDATE sell SET C_NUM = #{cNum}, PRICE = #{price}
+	</update>
 </mapper>

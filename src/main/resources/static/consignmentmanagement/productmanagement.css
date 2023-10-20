@@ -1,137 +1,189 @@
 #consignmemtmanagement {
-  width: 1250px;
-  margin: 0 auto;
-  margin-top: 20px;
-  height: auto;
+	width: 1250px;
+	margin: 0 auto;
+	margin-top: 20px;
+	height: auto;
 }
+
 /* .menu > li {
   padding-left: 10px;
 } */
-#menu2 > li {
-  padding-left: 10px;
+#menu2>li {
+	padding-left: 10px;
 }
+
 ul,
 li {
-  float: left;
-  list-style: none;
+	float: left;
+	list-style: none;
 }
+
 #category {
-  margin-top: 10px;
+	margin-top: 10px;
 }
-#category > ul > li {
-  border: 1px solid #242424;
-  padding: 10px;
-  justify-content: center;
-  align-items: center;
-  width: 70px;
-  height: 20px;
+
+#category>ul>li {
+	border: 1px solid #242424;
+	padding: 10px;
+	justify-content: center;
+	align-items: center;
+	width: 70px;
+	height: 20px;
 }
-#category > ul li {
-  cursor: pointer;
-  background-color: #fff;
+
+#category>ul li {
+	cursor: pointer;
+	background-color: #fff;
 }
-#category > ul li.clicked {
-  background-color: #fce6e6;
+
+#category>ul li.clicked {
+	background-color: #fce6e6;
 }
+
 #table1 {
-  margin-top: 5px;
+	margin-top: 5px;
 }
+
 #table1,
 #table2 {
-  border: 2px solid #242424;
-  border-collapse: collapse;
-  width: 1250px;
+	border: 2px solid #242424;
+	border-collapse: collapse;
+	width: 1250px;
 }
 
 th {
-  border: 1px solid #242424;
-  height: 30px;
-  margin: 0;
-  background-color: #fce6e6;
+	border: 1px solid #242424;
+	height: 30px;
+	margin: 0;
+	background-color: #fce6e6;
 }
 
-#table1 > tbody > tr > td {
-  border: 1px solid #242424;
-  height: 30px;
-}
-#table1 > tbody > tr > td > input {
-  margin-left: 10px;
-  font-size: 15px;
-  width: 30%;
-  height: 20px;
-  border: 1px solid #cacaca;
-  background-color: #ececec;
-}
-#search > button {
-  font-size: 15px;
-  border-radius: 3px;
-  width: 50px;
-  height: 28px;
-  border: 1px solid #929292;
-  color: #fff;
-  background-color: #f08080;
-  text-align: center;
-}
-#search > input {
-  font-size: 15px;
-  border-radius: 3px;
-  width: 180px;
-  height: 25px;
-  border: 1px solid #242424;
-  background-color: #fff;
-  text-align: center;
+#table1>tbody>tr>td {
+	border: 1px solid #242424;
+	height: 30px;
 }
 
-#table2 > tbody {
-  text-align: center;
+#table1>tbody>tr>td>input {
+	margin-left: 10px;
+	font-size: 15px;
+	width: 30%;
+	height: 20px;
+	border: 1px solid #cacaca;
+	background-color: #ececec;
 }
-#table2 > tbody > tr > td {
-  border: 1px solid #242424;
-  height: 30px;
-  margin: 0;
+
+#search>button {
+	font-size: 15px;
+	border-radius: 3px;
+	width: 50px;
+	height: 28px;
+	border: 1px solid #929292;
+	color: #fff;
+	background-color: #f08080;
+	text-align: center;
+	cursor: pointer;
 }
-#table2 > tbody > tr > td > input {
-  font-size: 15px;
-  width: 80%;
-  height: 40px;
-  border: none;
-  background-color: #fff;
-  text-align: center;
+
+#search>input {
+	font-size: 15px;
+	border-radius: 3px;
+	width: 230px;
+	height: 25px;
+	border: 1px solid #242424;
+	background-color: #fff;
+	text-align: center;
 }
-#table2 > tbody > tr > td > button {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  margin-right: 5px;
-  margin-left: 5px;
-  font-size: 15px;
-  border-radius: 3px;
-  width: 16%;
-  height: 40px;
-  border: 1px solid #242424;
-  background-color: #fce6e6;
-  text-align: center;
+#search>select {
+	font-size: 15px;
+	border-radius: 3px;
+	width: 110px;
+	height: 25px;
+	border: 1px solid #242424;
+	background-color: #fff;
+	text-align: center;
 }
-#table2 > tbody > button {
-  width: 20px;
-  height: 10px;
-  background-color: #fce6e6;
+
+#table2>tbody {
+	text-align: center;
 }
-#table2 > input {
-  width: 200px;
-  height: 20px;
+
+#table2>tbody>tr>td {
+	border: 1px solid #242424;
+	height: 30px;
+	margin: 0;
 }
-#btn > button {
-  width: 100px;
-  height: 40px;
-  border: 1px solid #929292;
-  color: #fff;
-  background-color: #f08080;
-  text-align: center;
-  border-radius: 5px;
-  margin-top: 10px;
-  padding: 5px;
+
+#table2>tbody>tr>td>input {
+	font-size: 15px;
+	width: 80%;
+	height: 40px;
+	border: none;
+	background-color: #fff;
+	text-align: center;
 }
-#btn > button >a{
+
+#table2>tbody>tr>td>button {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	margin-left: 5px;
+	font-size: 15px;
+	border-radius: 3px;
+	width: 16%;
+	height: 40px;
+	border: 1px solid #242424;
+	background-color: #fce6e6;
+	text-align: center;
+	cursor: pointer;
+}
+
+#table2>tbody>button {
+	width: 20px;
+	height: 10px;
+	background-color: #fce6e6;
+	cursor: pointer;
+}
+
+#table2>input {
+	width: 200px;
+	height: 20px;
+}
+
+#btn>button {
+	cursor: pointer;
+	width: 100px;
+	height: 40px;
+	border: 1px solid #929292;
+	color: #fff;
+	background-color: #f08080;
+	text-align: center;
+	border-radius: 5px;
+	margin-top: 10px;
+	padding: 5px;
+}
+
+#btn>button>a {
+	cursor: pointer;
 	text-decoration: none;
 	color: #fff;
+}
+
+/* 출하현황 버튼 css*/
+#table2>tbody>tr>td>#btn_waiting{
+	width: 80px;
+	color:rgb(233, 90, 90);
+	background-color: #fff;
+	border: 2px solid rgb(233, 90, 90);
+} 
+#table2>tbody>tr>td>#btn_proceeding{
+	width: 80px;
+	color:rgb(209, 24, 24);
+	background-color: #fff;
+	border: 2px solid rgb(209, 24, 24);
+}
+#table2>tbody>tr>td>#btn_completed{
+	width: 80px;
+	color: rgb(163, 20, 20);
+	background-color: #fff;
+	border: 2px solid rgb(163, 20, 20);
 }
